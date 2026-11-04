@@ -59,6 +59,8 @@ class Bahntafel extends IPSModule
         $this->RegisterAttributeInteger('LastFetch', 0);
         // name the module last gave the board variable
         $this->RegisterAttributeString('BoardName', '');
+        // name the module last gave the instance
+        $this->RegisterAttributeString('InstanceName', '');
 
         foreach (['Update', 'Recalc'] as $timer) {
             $this->RegisterTimer($timer, 0, 'IPS_RequestAction($_IPS[\'TARGET\'], "' . $timer . '", "");');
@@ -76,6 +78,7 @@ class Bahntafel extends IPSModule
         $this->MaintainVariable('Board', $this->Translate("Board"), 1, $this->boardPresentation(), self::POS_BOARD, true);
         $this->EnableAction('Board');
         $this->RegisterVariableString('BoardHtml', $this->Translate("Timetable"), '~HTMLBox', self::POS_HTML);
+        $this->nameInstance();
         // standard icons for the WebFront; icons the user chose stay
         foreach ([$this->InstanceID => 'train', $this->GetIDForIdent('BoardHtml') => 'clock'] as $id => $icon) {
             if (IPS_GetObject($id)['ObjectIcon'] === '') {
@@ -239,6 +242,17 @@ class Bahntafel extends IPSModule
         $this->SetValue('BoardHtml', BoardHtml::render($payload['rows'], $meta));
         $this->nameBoardVariable();
         $this->UpdateVisualizationValue(json_encode($payload));
+    }
+
+    // the station as instance name, which is also the title of the tile; a name the user gave stays
+    private function nameInstance(): void
+    {
+        $name = $this->station()['name'] ?? 'Bahntafel';
+        $current = IPS_GetName($this->InstanceID);
+        if ($current !== $name && in_array($current, ['Bahntafel', $this->ReadAttributeString('InstanceName')], true)) {
+            IPS_SetName($this->InstanceID, $name);
+        }
+        $this->WriteAttributeString('InstanceName', $name);
     }
 
     // "Abfahrt <station>" or "Ankunft <station>"; a name the user gave stays

@@ -24,13 +24,27 @@
     #bt .row svg, #bt .next svg { flex: none; width: 28px; height: 18px; }
     #bt .line { width: 3.4em; flex: none; font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
     #bt .dir { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-    #bt .onward { display: block; font-size: 0.75em; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; }
-    #bt .time { flex: none; font-weight: bold; }
+    /* the onward destination gives way first when space is short */
+    #bt .row .dir { display: flex; align-items: baseline; }
+    #bt .dir span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    #bt .dir .origin { flex: none; max-width: 100%; }
+    #bt .onward { flex: 1; margin-left: 6px; font-size: 0.75em; opacity: 0.7; }
+    #bt .time { flex: none; width: 4.4em; text-align: right; font-weight: bold; }
+    #bt .info { width: 0.8em; height: 0.8em; margin-right: 3px; vertical-align: -0.05em; }
+    #bt .colhead { font-size: 0.75em; opacity: 0.6; padding-top: 0; padding-bottom: 3px; border-top: none; }
+    #bt .colhead .badge { width: 28px; flex: none; }
+    #bt .colhead .line, #bt .colhead .time { font-weight: normal; }
+    /* 3.4em of the line at row size, so the column header needs its own width */
+    #bt .colhead .line { width: calc(3.4em / 0.75); }
+    #bt .colhead .time { width: calc(4.4em / 0.75); }
+    #bt .colhead .platform { width: calc(2em / 0.75); }
     #bt .platform { flex: none; width: 2em; text-align: right; }
     #bt .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
     #bt .red { color: var(--bt-red); }
     #bt .grey { opacity: 0.5; }
-    #bt .message { padding: 0 4px 6px 40px; color: var(--bt-orange); font-size: 0.8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* starts under the station: row padding, badge, gap, line, gap */
+    #bt .message { padding: 0 4px 6px calc(4px + 28px + 8px + 3.4em + 8px); color: var(--bt-orange); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #bt .message span { font-size: 0.8em; }
     #bt .hint { padding: 6px 0; opacity: 0.75; }
     #bt .notice { color: var(--bt-orange); }
     #bt .next { display: none; }
@@ -56,6 +70,9 @@
     // Texts are German on purpose, like the HTML box of the module
     const reachColor = { ok: 'var(--bt-green)', tight: 'var(--bt-orange)', missed: 'var(--bt-red)' };
     const noticeText = { failed: 'Aktualisierung fehlgeschlagen', noRealtime: 'ohne Echtzeitdaten', stale: 'Daten veraltet' };
+    // small info sign before a delayed time, as in the HTML box
+    const infoSign = '<svg class="info" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+        + '<rect x="5.25" y="5" width="1.5" height="4" fill="currentColor"/><circle cx="6" cy="3.25" r="0.9" fill="currentColor"/></svg>';
     let state = null;
 
     function el(tag, className, text) {
@@ -81,14 +98,18 @@
         const r = el('div', 'row' + (row.cancelled || row.offRoute ? ' grey' : ''));
         r.appendChild(badge(row.badge));
         r.appendChild(el('span', 'line', row.line));
-        const dir = el('span', 'dir', row.direction);
+        const dir = el('span', 'dir');
+        dir.appendChild(el('span', 'origin', row.direction));
         if (row.continuesTo) dir.appendChild(el('span', 'onward', 'weiter nach ' + row.continuesTo));
         r.appendChild(dir);
         if (row.cancelled) {
             r.appendChild(el('span', 'red', 'fällt aus'));
             return r;
         }
-        r.appendChild(el('span', 'time' + (row.delayed ? ' red' : ''), clock(row.time)));
+        const time = el('span', 'time' + (row.delayed ? ' red' : ''));
+        if (row.delayed) time.innerHTML = infoSign;
+        time.appendChild(document.createTextNode(clock(row.time)));
+        r.appendChild(time);
         r.appendChild(el('span', 'platform' + (row.platformChanged ? ' red' : ''), row.platform));
         const dot = el('span', 'dot');
         dot.style.background = reachColor[row.reach] || 'transparent';
@@ -105,15 +126,25 @@
         }
         if (state.rows.length === 0) {
             list.appendChild(el('div', 'hint', 'Keine passenden Züge in den nächsten 2 Stunden'));
+            return;
         }
+        const head = el('div', 'row colhead');
+        for (const [className, text] of [['badge', ''], ['line', 'Zug'], ['dir', state.board === 'arr' ? 'Von' : 'Richtung'], ['time', 'Zeit'], ['platform', 'Gl.'], ['dot', '']]) {
+            head.appendChild(el('span', className, text));
+        }
+        list.appendChild(head);
         for (const row of state.rows) {
             const group = el('div', row.reach === 'missed' || row.reach === 'tight' ? row.reach : '');
             group.appendChild(rowOf(row));
-            for (const message of row.messages) group.appendChild(el('div', 'message', message));
+            for (const message of row.messages) {
+                const line = el('div', 'message');
+                line.appendChild(el('span', '', message));
+                group.appendChild(line);
+            }
             list.appendChild(group);
         }
         // rows that do not fit are left out instead of being cut
-        while (list.childElementCount > 1 && list.scrollHeight > list.clientHeight) list.lastChild.remove();
+        while (list.childElementCount > 2 && list.scrollHeight > list.clientHeight) list.lastChild.remove();
     }
 
     function renderNext() {

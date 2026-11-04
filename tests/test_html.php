@@ -105,3 +105,11 @@ $tests['Html: arrivals show where the train comes from and where it goes on'] = 
     check(!str_contains(BoardHtml::render([row()], meta(['board' => 'arr'])), 'weiter nach'), 'ends here');
     check(str_contains(BoardHtml::render([row()], meta()), '>Richtung</th>'), 'departure header');
 };
+
+$tests['Html: info sign before a delayed time, messages under the station column, onward inline'] = function () {
+    $html = BoardHtml::render([row(['line' => 'L1', 'delayed' => true, 'messages' => ['Bauarbeiten']]), row(['line' => 'L2'])], meta());
+    check(str_contains(rowHtml($html, 'L1'), BoardHtml::INFO) && !str_contains(rowHtml($html, 'L2'), BoardHtml::INFO), 'info only when delayed');
+    check(preg_match("/<td colspan='4'[^>]*><\/td><td colspan='2'[^>]*>Bauarbeiten/", rowHtml($html, 'Bauarbeiten')) === 1, 'message under the station');
+    $tr = rowHtml(BoardHtml::render([row(['direction' => 'Großstadt Hbf', 'continuesTo' => 'Grenzstadt'])], meta(['board' => 'arr'])), 'Großstadt Hbf');
+    check(!str_contains($tr, '<br/><span style=\'font-size:11px;color:#a0a0a0;\'>weiter nach'), 'onward on the same line');
+};

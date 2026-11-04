@@ -32,7 +32,7 @@ $tests['Tile: every recalculation is sent to the tile like the HTML box'] = func
     $m->RequestAction('Recalc', '');
     check(count($m->visu) === $count + 1, 'sent');
     $last = json_decode(end($m->visu), true);
-    check($last['board'] === 'dep' && count($last['rows']) === substr_count($m->value('BoardHtml'), '<td style=\'padding:10px;vertical-align:middle;border-bottom:1px solid #444;\'><svg'), 'same rows');
+    check($last['board'] === 'dep' && count($last['rows']) === substr_count($m->value('BoardHtml'), 'role="img"'), 'same rows');
 };
 
 $tests['Tile: one SVG per badge of the rows'] = function () {

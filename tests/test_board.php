@@ -109,6 +109,16 @@ $tests['Board: reachability from the planned time, a delay may shrink'] = functi
     check($rows[0]['reach'] === 'missed', 'earlier than planned counts');
 };
 
+$tests['Board: delay without a reason gets its own message'] = function () {
+    $now = TestRegistry::$now;
+    $rows = BoardBuilder::build([
+        trip('a', 10, ['dep' => ['changed' => $now + 15 * 60]]),
+        trip('b', 11, ['dep' => ['changed' => $now + 16 * 60], 'messages' => ['Bauarbeiten']]),
+        trip('c', 12),
+    ], $now, settings());
+    check(array_column($rows, 'messages') === [[], ['Verspätung'], ['Bauarbeiten']], json_encode(array_column($rows, 'messages')));
+};
+
 $tests['Board: direction, platform, operator and badge'] = function () {
     $trips = [trip('a', 5, [
         'line' => 'RE6', 'category' => 'NVB',

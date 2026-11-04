@@ -25,6 +25,7 @@ class BoardBuilder
                 continue;
             }
             $minutesLeft = intdiv($time - $now, 60);
+            $delayed = $stop['changed'] !== null && $stop['changed'] > $stop['planned'];
             // departures: destination; arrivals: origin and, if the train goes on, its destination
             $direction = $part === 'dep' ? end($stop['path']) : reset($stop['path']);
             $continuesTo = $part === 'arr' && $trip['dep'] !== null ? end($trip['dep']['path']) : false;
@@ -34,7 +35,7 @@ class BoardBuilder
                 'operator'        => stripos($trip['line'], $trip['category']) === 0 ? '' : $trip['category'],
                 'badge'           => TrainBadge::label($trip['line'], $trip['category']),
                 'time'            => $time,
-                'delayed'         => $stop['changed'] !== null && $stop['changed'] > $stop['planned'],
+                'delayed'         => $delayed,
                 'platform'        => $stop['changedPlatform'] ?? $stop['platform'],
                 'platformChanged' => $stop['changedPlatform'] !== null && $stop['changedPlatform'] !== $stop['platform'],
                 'cancelled'       => $stop['cancelled'],
@@ -44,7 +45,8 @@ class BoardBuilder
                 // a delay may shrink, so the walk is planned for the earlier of planned and changed time
                 'reach'           => self::reach($part, $stop['cancelled'] || $offRoute, intdiv(min($time, $stop['planned']) - $now, 60), $settings),
                 'offRoute'        => $offRoute,
-                'messages'        => $trip['messages'],
+                // the API often gives no reason for a delay
+                'messages'        => $delayed && $trip['messages'] === [] ? ['Verspätung'] : $trip['messages'],
             ];
         }
         usort($rows, fn (array $a, array $b) => $a['time'] <=> $b['time']);

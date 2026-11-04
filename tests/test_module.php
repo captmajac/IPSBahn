@@ -69,6 +69,21 @@ $tests['Module: train icon on the instance, clock on the board, own icons kept']
     check(IPS_GetObject($m->InstanceID)['ObjectIcon'] === 'house', 'own icon kept');
 };
 
+$tests['Module: instance named after the station, own names kept'] = function () {
+    $m = makeBoard(['Station' => '']);
+    check(IPS_GetName(2) === 'Bahntafel', 'no station');
+    $m->properties['Station'] = WOHNORT;
+    $m->ApplyChanges();
+    check(IPS_GetName(2) === 'WohnortBahnhof', IPS_GetName(2));
+    $m->properties['Station'] = '{"eva":"8099003","name":"Großstadt Hbf"}';
+    $m->ApplyChanges();
+    check(IPS_GetName(2) === 'Großstadt Hbf', 'station changed');
+    IPS_SetName(2, 'Bahn Flur');
+    $m->properties['Station'] = WOHNORT;
+    $m->ApplyChanges();
+    check(IPS_GetName(2) === 'Bahn Flur', 'own name kept');
+};
+
 $tests['Module: no fetch before the kernel is ready'] = function () {
     TestRegistry::$runlevel = 0;
     $m = makeBoard();

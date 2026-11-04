@@ -53,6 +53,7 @@ function makeBoard(array $props = []): TestBahntafel
 {
     TestRegistry::$http ??= wohnortHttp();
     $m = new TestBahntafel(2);
+    TestRegistry::$objects[2] ??= ['name' => 'Bahntafel', 'type' => 1];  // as Symcon names a new instance
     $m->Create();
     $m->properties = array_merge($m->properties, ['ClientId' => 'id', 'ApiKey' => 'key', 'Station' => WOHNORT], $props);
     $m->ApplyChanges();
