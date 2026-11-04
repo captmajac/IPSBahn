@@ -30,9 +30,6 @@
     #bt .dir .origin { flex: none; max-width: 100%; }
     #bt .onward { flex: 1; margin-left: 6px; font-size: 0.75em; opacity: 0.7; }
     #bt .time { flex: none; width: 4.4em; text-align: right; font-weight: bold; }
-    /* time and info sign centred on one line; the sign no taller than the digits */
-    #bt .time { display: inline-flex; align-items: center; justify-content: flex-end; gap: 0.25em; }
-    #bt .row svg.info { width: 0.7em; height: 0.7em; flex: none; }
     #bt .colhead { font-size: 0.75em; opacity: 0.6; padding-top: 0; padding-bottom: 3px; border-top: none; }
     #bt .colhead .badge { width: 28px; flex: none; }
     #bt .colhead .line, #bt .colhead .time { font-weight: normal; }
@@ -72,9 +69,6 @@
     // Texts are German on purpose, like the HTML box of the module
     const reachColor = { ok: 'var(--bt-green)', tight: 'var(--bt-orange)', missed: 'var(--bt-red)' };
     const noticeText = { failed: 'Aktualisierung fehlgeschlagen', noRealtime: 'ohne Echtzeitdaten', stale: 'Daten veraltet' };
-    // small info sign before a delayed time, as in the HTML box
-    const infoSign = '<svg class="info" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5.25" fill="none" stroke="currentColor" stroke-width="1.5"/>'
-        + '<rect x="5.25" y="5" width="1.5" height="4" fill="currentColor"/><circle cx="6" cy="3.25" r="0.9" fill="currentColor"/></svg>';
     let state = null;
 
     function el(tag, className, text) {
@@ -108,10 +102,7 @@
             r.appendChild(el('span', 'red', 'fällt aus'));
             return r;
         }
-        const time = el('span', 'time' + (row.delayed ? ' red' : ''));
-        if (row.delayed) time.innerHTML = infoSign;
-        time.appendChild(document.createTextNode(clock(row.time)));
-        r.appendChild(time);
+        r.appendChild(el('span', 'time' + (row.delayed ? ' red' : ''), clock(row.time)));
         r.appendChild(el('span', 'platform' + (row.platformChanged ? ' red' : ''), row.platform));
         const dot = el('span', 'dot');
         dot.style.background = reachColor[row.reach] || 'transparent';

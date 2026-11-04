@@ -33,7 +33,7 @@ Basis-URL `https://apis.deutschebahn.com/db-api-marketplace/apis/timetables/v1/`
 | `plan/{eva}/{yymmdd}/{hh}` | Soll-Fahrplan einer Stunde: Zug, Linie, Sollzeit, Sollgleis, Laufweg `ppth` |
 | `fchg/{eva}` | alle bekannten Änderungen: geänderte Zeit `ct`, geändertes Gleis `cp`, Ausfall `cs="c"`, Meldungen `m` |
 
-Abfahrt (`dp`) und Ankunft (`ar`) stecken in denselben Antworten. Eine Aktualisierung umfasst `plan` für die vorherige, die aktuelle und die nächste Stunde sowie einmal `fchg`, also 4 Abrufe. Die vorherige Stunde wird gebraucht, weil ein um 09:58 geplanter Zug mit Verspätung um 10:05 noch kommt (Ergänzung nach dem Review). Das API-Limit (60 pro Minute) wird weit unterschritten.
+Abfahrt (`dp`) und Ankunft (`ar`) stecken in denselben Antworten. Eine Aktualisierung umfasst `plan` für die vorherige, die aktuelle und die nächste Stunde sowie einmal `fchg`, also 4 Abrufe. Die vorherige Stunde wird gebraucht, weil ein um 09:58 geplanter Zug mit Verspätung um 10:05 noch kommt (Ergänzung nach dem Review). Das API-Limit (60 pro Minute) wird weit unterschritten. Füllen die Züge nach den Filtern die Zeilen nicht, werden Stunde für Stunde weitere geladen, höchstens 4 nach der aktuellen (Ergänzung nach dem Test in Symcon); die nötige Zahl merkt sich das Modul für den nächsten Abruf.
 
 Die Stops aus `plan` und `fchg` werden über ihr `id`-Attribut zusammengeführt. Diese ID dient als stabile Fahrt-ID.
 

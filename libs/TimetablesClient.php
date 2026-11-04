@@ -37,13 +37,15 @@ class TimetablesClient
     }
 
     // planned trips of the previous, current and next hour with the known changes; realtime false if fchg failed
-    public function fetchTrips(string $eva, int $now): array
+    // plans from the previous hour up to $ahead hours after the current one, with the changes
+    public function fetchTrips(string $eva, int $now, int $ahead = 1): array
     {
         $tz = new DateTimeZone(self::TIMEZONE);
         // previous hour too: a train planned at 09:58 and delayed to 10:15 is still to come at 10:05;
         // unique: on the DST change two timestamps an hour apart can be the same local hour
         $hours = [];
-        foreach ([$now - 3600, $now, $now + 3600] as $time) {
+        foreach (range(-1, $ahead) as $offset) {
+            $time = $now + $offset * 3600;
             $hours[] = (new DateTime('@' . $time))->setTimezone($tz)->format('ymd/H');
         }
         $trips = [];

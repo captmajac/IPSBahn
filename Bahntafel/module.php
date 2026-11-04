@@ -16,6 +16,7 @@ class Bahntafel extends IPSModule
     const THROTTLE_S = 300;    // switching the board fetches at most this often
     const RECALC_MS = 60000;   // minutes left and reachability without API calls
     const MIN_AHEAD_S = 3600;  // fetch again when the loaded hours reach less far ahead
+    const MAX_AHEAD_H = 4;     // hours after the current one loaded at most to fill the rows
     const POS_BOARD = 1;
     const POS_HTML = 2;
 
@@ -57,6 +58,8 @@ class Bahntafel extends IPSModule
         // '' | 'failed' | 'noRealtime' of the last update
         $this->RegisterAttributeString('Notice', '');
         $this->RegisterAttributeInteger('LastFetch', 0);
+        // hours after the current one the last update needed to fill the rows
+        $this->RegisterAttributeInteger('AheadHours', 1);
         // name the module last gave the board variable
         $this->RegisterAttributeString('BoardName', '');
         // name the module last gave the instance
@@ -213,10 +216,23 @@ class Bahntafel extends IPSModule
         }
         $this->WriteAttributeInteger('LastFetch', $this->now());
         try {
-            $result = $this->client()->fetchTrips($this->station()['eva'], $this->now());
+            // hidden trains must not shorten the board: load more hours until the rows are filled
+            $ahead = min(self::MAX_AHEAD_H, max(1, $this->ReadAttributeInteger('AheadHours')));
+            while (true) {
+                $result = $this->client()->fetchTrips($this->station()['eva'], $this->now(), $ahead);
+                $rows = $this->rows($result['trips']);
+                if ($ahead >= self::MAX_AHEAD_H || count($rows) >= $this->ReadPropertyInteger('Rows')) {
+                    break;
+                }
+                $ahead++;
+            }
+            $loadedUntil = self::nextHourStart($this->now()) + $ahead * 3600;
+            // the next update starts one hour shorter when the last hour was not needed
+            $lastTime = $rows === [] ? PHP_INT_MAX : end($rows)['time'];
+            $this->WriteAttributeInteger('AheadHours', $ahead > 1 && $lastTime < $loadedUntil - 3600 ? $ahead - 1 : $ahead);
             $this->WriteAttributeString('Trips', json_encode($result['trips']));
             $this->WriteAttributeInteger('FetchedAt', $this->now());
-            $this->WriteAttributeInteger('LoadedUntil', self::nextHourStart($this->now()) + 3600);
+            $this->WriteAttributeInteger('LoadedUntil', $loadedUntil);
             $this->WriteAttributeString('Notice', $result['realtime'] ? '' : 'noRealtime');
             $this->SetStatus(102);
         } catch (TimetablesAuthException $e) {
@@ -269,7 +285,8 @@ class Bahntafel extends IPSModule
         $this->WriteAttributeString('BoardName', $name);
     }
 
-    private function rows(): array
+    // rows of the loaded trips, or of the given ones
+    private function rows(?array $trips = null): array
     {
         if (!$this->configured()) {
             return [];
@@ -280,7 +297,7 @@ class Bahntafel extends IPSModule
                 $groups[] = $group;
             }
         }
-        return BoardBuilder::build(json_decode($this->ReadAttributeString('Trips'), true), $this->now(), [
+        return BoardBuilder::build($trips ?? json_decode($this->ReadAttributeString('Trips'), true), $this->now(), [
             'board'     => $this->board(),
             'groups'    => $groups,
             'route'     => $this->ReadPropertyString('RouteStation'),

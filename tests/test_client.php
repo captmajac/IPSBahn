@@ -67,6 +67,13 @@ $tests['Client: fetchTrips requests previous, current and next hour across midni
     check(count($result['trips']) === 2 && $result['realtime'] === true, 'trips');
 };
 
+$tests['Client: fetchTrips loads more hours ahead on request'] = function () {
+    $client = new TimetablesClient('id', 'key', fakeHttp(['/fchg/8099001' => [200, '<timetable/>'], '/18' => [200, '<timetable/>']]));
+    $client->fetchTrips('8099001', TestRegistry::$now, 3);
+    $urls = array_map(fn ($c) => substr($c[0], -9), TestRegistry::$calls);
+    check($urls === ['261104/17', '261104/18', '261104/19', '261104/20', '261104/21', 'g/8099001'], json_encode($urls));
+};
+
 $tests['Client: 401 is an authentication error'] = function () {
     $client = new TimetablesClient('id', 'key', fakeHttp(['/18' => [401, ''], '/19' => [401, ''], '/fchg/8099001' => [401, '']]));
     try {

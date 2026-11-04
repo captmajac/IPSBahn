@@ -31,12 +31,12 @@ Unter der Instanz liegen danach:
 
 ## Aktualisierung
 
-Die Tafel wird im eingestellten Intervall abgerufen (Standard 60 Minuten). Jeder Abruf besteht aus 4 API-Aufrufen: Fahrplan der vorherigen, aktuellen und nächsten Stunde (die vorherige für verspätete Züge) sowie die Änderungen. Reichen die geladenen Stunden weniger als eine Stunde voraus, lädt das Modul sofort nach, auch bei längerem Intervall. Beim Umschalten der Anzeige wird zusätzlich abgerufen, höchstens alle 5 Minuten. Restzeit und Erreichbarkeit berechnet das Modul jede Minute neu, dafür ruft es die API nicht ab.
+Die Tafel wird im eingestellten Intervall abgerufen (Standard 60 Minuten). Jeder Abruf besteht aus 4 API-Aufrufen: Fahrplan der vorherigen, aktuellen und nächsten Stunde (die vorherige für verspätete Züge) sowie die Änderungen. Füllen die Züge nach den Filtern die eingestellten Zeilen nicht, lädt das Modul weitere Stunden nach, höchstens 4 Stunden über die aktuelle hinaus, und beginnt beim nächsten Abruf gleich mit so vielen Stunden. Reichen die geladenen Stunden weniger als eine Stunde voraus, lädt das Modul sofort nach, auch bei längerem Intervall. Beim Umschalten der Anzeige wird zusätzlich abgerufen, höchstens alle 5 Minuten. Restzeit und Erreichbarkeit berechnet das Modul jede Minute neu, dafür ruft es die API nicht ab.
 
 ## Grenzen
 
 - Nur Direktverbindungen: Ob ein Zug zur Strecke gehört, ergibt sich aus seinem Laufweg.
-- Vorschau 1 bis 2 Stunden.
+- Vorschau 1 bis 2 Stunden, bei ausgeblendeten Zügen bis zu 5 Stunden.
 - Verspätungen sind höchstens ein Intervall alt.
 
 ## Entwicklung

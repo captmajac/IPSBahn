@@ -84,6 +84,39 @@ $tests['Module: instance named after the station, own names kept'] = function ()
     check(IPS_GetName(2) === 'Bahn Flur', 'own name kept');
 };
 
+// WohnortBahnhof with the 19 o'clock trains once more at 20 o'clock
+function wohnortHttpUntil20(): callable
+{
+    $base = wohnortHttp();
+    $at20 = str_replace('26110419', '26110420', fixture('plan_wohnort_19.xml'));
+    return function (string $url, array $headers) use ($base, $at20): array {
+        if (str_ends_with($url, '/plan/8099001/261104/20')) {
+            TestRegistry::$calls[] = [$url, $headers];
+            return ['status' => 200, 'body' => $at20];
+        }
+        return $base($url, $headers);
+    };
+}
+
+$tests['Module: hidden trains do not shorten the board, more hours are loaded'] = function () {
+    TestRegistry::$http = wohnortHttpUntil20();
+    $m = makeBoard(['RouteStation' => 'Großstadt Hbf', 'Rows' => 8]);
+    $rows = $m->testPayload()['rows'];
+    $plans = fn () => array_map(fn ($c) => substr($c[0], -2), TestRegistry::$calls);
+    check(count($rows) === 8, count($rows) . ' rows');
+    check(in_array('20', $plans(), true), 'loaded 20 o\'clock');
+    check($m->attributes['LoadedUntil'] === TestRegistry::$now + 3 * 3600, 'window');
+    TestRegistry::$calls = [];
+    $m->RequestAction('Update', '');
+    check(count(TestRegistry::$calls) === 5, 'next update starts with the hours it needed: ' . count(TestRegistry::$calls));
+};
+
+$tests['Module: loading ahead stops after a few hours'] = function () {
+    $m = makeBoard(['RouteStation' => 'Großstadt Hbf', 'Rows' => 20]);
+    check(count(array_filter(TestRegistry::$calls, fn ($c) => str_contains($c[0], '/plan/'))) <= 3 + 4 + 5 + 6, 'bounded');
+    check($m->attributes['LoadedUntil'] === TestRegistry::$now + 5 * 3600, 'four hours ahead at most');
+};
+
 $tests['Module: no fetch before the kernel is ready'] = function () {
     TestRegistry::$runlevel = 0;
     $m = makeBoard();
@@ -249,7 +282,7 @@ $tests['Module: changing the station drops the trips of the old one'] = function
 };
 
 $tests['Module: recalc fetches when the loaded window runs out'] = function () {
-    $m = makeBoard();  // 18:00, plan up to 20:00
+    $m = makeBoard(['Rows' => 2]);  // 18:00, plan up to 20:00, enough trains
     TestRegistry::$now += 30 * 60;
     $m->RequestAction('Recalc', '');
     check(count(TestRegistry::$calls) === 4, 'enough left at 18:30');

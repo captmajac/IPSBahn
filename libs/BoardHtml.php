@@ -12,8 +12,6 @@ class BoardHtml
     // row backgrounds for trains that cannot or can only just be reached
     const MISSED_BG = '#4a2c2c';
     const TIGHT_BG = '#4a3b26';
-    // small info sign before a delayed time
-    const INFO = "<svg width='12' height='12' viewBox='0 0 12 12' style='vertical-align:-1px;margin-right:4px;'><circle cx='6' cy='6' r='5.25' fill='none' stroke='#E53935' stroke-width='1.5'/><rect x='5.25' y='5' width='1.5' height='4' fill='#E53935'/><circle cx='6' cy='3.25' r='0.9' fill='#E53935'/></svg>";
 
     private const NOTICES = [
         'failed'     => 'Aktualisierung fehlgeschlagen',
@@ -61,7 +59,7 @@ class BoardHtml
         $html = "<tr style='$style'>";
         $html .= $cell . TrainBadge::svg($row['badge']) . '</td>';
         $html .= $cell . $white($row['line'], false) . ($row['operator'] !== '' ? $small($row['operator']) : '') . '</td>';
-        $html .= $cell . ($row['delayed'] ? self::INFO : '') . $white(self::time('H:i', $row['time']), $row['delayed']) . $small('in ' . $row['minutesLeft'] . ' min') . '</td>';
+        $html .= $cell . $white(self::time('H:i', $row['time']), $row['delayed']) . $small('in ' . $row['minutesLeft'] . ' min') . '</td>';
         $html .= $cell . self::status($row, $meta) . '</td>';
         $html .= $cell . self::e($row['direction'])
             . ($row['continuesTo'] !== '' ? " <span style='font-size:11px;color:#a0a0a0;'>weiter nach " . self::e($row['continuesTo']) . '</span>' : '') . '</td>';
