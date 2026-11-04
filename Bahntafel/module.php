@@ -76,6 +76,12 @@ class Bahntafel extends IPSModule
         $this->MaintainVariable('Board', $this->Translate("Board"), 1, $this->boardPresentation(), self::POS_BOARD, true);
         $this->EnableAction('Board');
         $this->RegisterVariableString('BoardHtml', $this->Translate("Timetable"), '~HTMLBox', self::POS_HTML);
+        // standard icons for the WebFront; icons the user chose stay
+        foreach ([$this->InstanceID => 'train', $this->GetIDForIdent('BoardHtml') => 'clock'] as $id => $icon) {
+            if (IPS_GetObject($id)['ObjectIcon'] === '') {
+                IPS_SetIcon($id, $icon);
+            }
+        }
 
         $eva = $this->station()['eva'] ?? '';
         if ($this->ReadAttributeString('TripsEva') !== $eva) {

@@ -10,7 +10,10 @@
     }
     #bt .head { display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.75; padding-bottom: 4px; flex: none; }
     #bt .list { flex: 1; overflow: hidden; }
-    #bt .row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--bt-line); white-space: nowrap; }
+    #bt .row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-top: 1px solid var(--bt-line); white-space: nowrap; }
+    /* trains that cannot or can only just be reached, with their messages */
+    #bt .missed { background: rgba(229, 57, 53, 0.16); }
+    #bt .tight { background: rgba(251, 140, 0, 0.16); }
     #bt .row svg, #bt .next svg { flex: none; width: 28px; height: 18px; }
     #bt .line { width: 3.4em; flex: none; font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
     #bt .dir { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -19,7 +22,7 @@
     #bt .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
     #bt .red { color: var(--bt-red); }
     #bt .grey { opacity: 0.5; }
-    #bt .message { padding: 0 0 6px 36px; color: var(--bt-orange); font-size: 0.8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #bt .message { padding: 0 4px 6px 40px; color: var(--bt-orange); font-size: 0.8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     #bt .hint { padding: 6px 0; opacity: 0.75; }
     #bt .notice { color: var(--bt-orange); }
     #bt .next { display: none; }
@@ -89,7 +92,7 @@
             list.appendChild(el('div', 'hint', 'Keine passenden Züge in den nächsten 2 Stunden'));
         }
         for (const row of state.rows) {
-            const group = el('div');
+            const group = el('div', row.reach === 'missed' || row.reach === 'tight' ? row.reach : '');
             group.appendChild(rowOf(row));
             for (const message of row.messages) group.appendChild(el('div', 'message', message));
             list.appendChild(group);
@@ -122,7 +125,7 @@
         document.getElementById('board').textContent = state.board === 'arr' ? 'Ankunft' : 'Abfahrt';
         const stand = document.getElementById('stand');
         const parts = [];
-        if (state.fetchedAt > 0) parts.push(clock(state.fetchedAt));
+        if (state.fetchedAt > 0) parts.push('von: ' + clock(state.fetchedAt));
         if (noticeText[state.notice]) parts.push(noticeText[state.notice]);
         stand.textContent = parts.join(' · ');
         stand.className = noticeText[state.notice] ? 'notice' : '';

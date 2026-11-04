@@ -61,6 +61,14 @@ $tests['Module: board variable named after board and station, own names kept'] =
     check(IPS_GetName(makeBoard(['Station' => ''])->variables['BoardHtml']) === 'Timetable', 'no station');
 };
 
+$tests['Module: train icon on the instance, clock on the board, own icons kept'] = function () {
+    $m = makeBoard();
+    check(IPS_GetObject($m->InstanceID)['ObjectIcon'] === 'train' && IPS_GetObject($m->variables['BoardHtml'])['ObjectIcon'] === 'clock', 'icons');
+    IPS_SetIcon($m->InstanceID, 'house');
+    $m->ApplyChanges();
+    check(IPS_GetObject($m->InstanceID)['ObjectIcon'] === 'house', 'own icon kept');
+};
+
 $tests['Module: no fetch before the kernel is ready'] = function () {
     TestRegistry::$runlevel = 0;
     $m = makeBoard();

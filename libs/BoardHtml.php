@@ -9,6 +9,9 @@ class BoardHtml
     const GREEN = '#43A047';
     const ORANGE = '#FB8C00';
     const RED = '#E53935';
+    // row backgrounds for trains that cannot or can only just be reached
+    const MISSED_BG = '#4a2c2c';
+    const TIGHT_BG = '#4a3b26';
 
     private const NOTICES = [
         'failed'     => 'Aktualisierung fehlgeschlagen',
@@ -47,7 +50,8 @@ class BoardHtml
 
     private static function row(array $row, int $i, array $meta): string
     {
-        $style = 'background:' . ($i % 2 === 0 ? '#333333' : '#2b2b2b') . ';' . ($row['cancelled'] || $row['offRoute'] ? 'opacity:0.5;' : '');
+        $background = ['missed' => self::MISSED_BG, 'tight' => self::TIGHT_BG][$row['reach']] ?? ($i % 2 === 0 ? '#333333' : '#2b2b2b');
+        $style = 'background:' . $background . ';' . ($row['cancelled'] || $row['offRoute'] ? 'opacity:0.5;' : '');
         $cell = "<td style='padding:10px;vertical-align:middle;border-bottom:1px solid #444;'>";
         $white = fn (string $text, bool $red) => "<b style='color:" . ($red ? self::RED : '#ffffff') . ";'>" . self::e($text) . '</b>';
         $small = fn (string $text) => "<br/><span style='font-size:11px;color:#a0a0a0;'>" . self::e($text) . '</span>';

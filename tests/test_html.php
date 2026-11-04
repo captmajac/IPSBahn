@@ -90,3 +90,10 @@ $tests['Html: times in German time also on a server in UTC'] = function () {
     }
     check(str_contains($html, '18:26') && str_contains($html, 'Stand: 04.11.2026 18:00'), 'Berlin time');
 };
+
+$tests['Html: missed rows tinted red, tight rows orange, with their messages'] = function () {
+    $html = BoardHtml::render([row(['line' => 'L1', 'reach' => 'missed', 'messages' => ['Bauarbeiten']]), row(['line' => 'L2', 'reach' => 'tight']), row(['line' => 'L3', 'reach' => 'ok'])], meta());
+    check(str_contains(rowHtml($html, 'L1'), 'background:' . BoardHtml::MISSED_BG) && str_contains(rowHtml($html, 'Bauarbeiten'), 'background:' . BoardHtml::MISSED_BG), 'missed');
+    check(str_contains(rowHtml($html, 'L2'), 'background:' . BoardHtml::TIGHT_BG), 'tight');
+    check(!str_contains(rowHtml($html, 'L3'), BoardHtml::MISSED_BG) && !str_contains(rowHtml($html, 'L3'), BoardHtml::TIGHT_BG), 'ok untinted');
+};
