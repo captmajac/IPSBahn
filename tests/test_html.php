@@ -7,7 +7,7 @@ function row(array $over = []): array
     return array_merge([
         'id' => 'a', 'line' => 'S1', 'operator' => 'SBX', 'badge' => 'S', 'time' => TestRegistry::$now + 26 * 60, 'delayed' => false,
         'platform' => '13', 'platformChanged' => false, 'cancelled' => false, 'direction' => 'Südstadt Hbf',
-        'minutesLeft' => 26, 'reach' => null, 'offRoute' => false, 'messages' => [],
+        'minutesLeft' => 26, 'continuesTo' => '', 'reach' => null, 'offRoute' => false, 'messages' => [],
     ], $over);
 }
 
@@ -96,4 +96,12 @@ $tests['Html: missed rows tinted red, tight rows orange, with their messages'] =
     check(str_contains(rowHtml($html, 'L1'), 'background:' . BoardHtml::MISSED_BG) && str_contains(rowHtml($html, 'Bauarbeiten'), 'background:' . BoardHtml::MISSED_BG), 'missed');
     check(str_contains(rowHtml($html, 'L2'), 'background:' . BoardHtml::TIGHT_BG), 'tight');
     check(!str_contains(rowHtml($html, 'L3'), BoardHtml::MISSED_BG) && !str_contains(rowHtml($html, 'L3'), BoardHtml::TIGHT_BG), 'ok untinted');
+};
+
+$tests['Html: arrivals show where the train comes from and where it goes on'] = function () {
+    $html = BoardHtml::render([row(['direction' => 'Großstadt Hbf', 'continuesTo' => 'Grenzstadt'])], meta(['board' => 'arr']));
+    check(str_contains($html, '>Von</th>') && !str_contains($html, '>Richtung</th>'), 'header');
+    check(str_contains(rowHtml($html, 'Großstadt Hbf'), 'weiter nach Grenzstadt'), 'onward');
+    check(!str_contains(BoardHtml::render([row()], meta(['board' => 'arr'])), 'weiter nach'), 'ends here');
+    check(str_contains(BoardHtml::render([row()], meta()), '>Richtung</th>'), 'departure header');
 };

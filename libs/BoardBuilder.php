@@ -25,7 +25,9 @@ class BoardBuilder
                 continue;
             }
             $minutesLeft = intdiv($time - $now, 60);
+            // departures: destination; arrivals: origin and, if the train goes on, its destination
             $direction = $part === 'dep' ? end($stop['path']) : reset($stop['path']);
+            $continuesTo = $part === 'arr' && $trip['dep'] !== null ? end($trip['dep']['path']) : false;
             $rows[] = [
                 'id'              => $trip['id'],
                 'line'            => $trip['line'],
@@ -37,6 +39,7 @@ class BoardBuilder
                 'platformChanged' => $stop['changedPlatform'] !== null && $stop['changedPlatform'] !== $stop['platform'],
                 'cancelled'       => $stop['cancelled'],
                 'direction'       => $direction === false ? '' : $direction,
+                'continuesTo'     => $continuesTo === false ? '' : $continuesTo,
                 'minutesLeft'     => $minutesLeft,
                 'reach'           => self::reach($part, $stop['cancelled'] || $offRoute, $minutesLeft, $settings),
                 'offRoute'        => $offRoute,

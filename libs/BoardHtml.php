@@ -34,7 +34,7 @@ class BoardHtml
         }
         $html .= "<table width='100%' cellspacing='0' cellpadding='0' style='border-collapse:collapse;'>";
         $html .= "<tr style='background:#3a3a3a;color:#ffffff;'>";
-        foreach (['Typ', 'Zug', 'Zeit', 'Status', 'Richtung', 'Gleis'] as $title) {
+        foreach (['Typ', 'Zug', 'Zeit', 'Status', $meta['board'] === 'arr' ? 'Von' : 'Richtung', 'Gleis'] as $title) {
             $html .= "<th style='padding:10px;text-align:left;border-bottom:1px solid #444;'>$title</th>";
         }
         $html .= '</tr>';
@@ -61,7 +61,7 @@ class BoardHtml
         $html .= $cell . $white($row['line'], false) . ($row['operator'] !== '' ? $small($row['operator']) : '') . '</td>';
         $html .= $cell . $white(self::time('H:i', $row['time']), $row['delayed']) . $small('in ' . $row['minutesLeft'] . ' min') . '</td>';
         $html .= $cell . self::status($row, $meta) . '</td>';
-        $html .= $cell . self::e($row['direction']) . '</td>';
+        $html .= $cell . self::e($row['direction']) . ($row['continuesTo'] !== '' ? $small('weiter nach ' . $row['continuesTo']) : '') . '</td>';
         $html .= $cell . $white($row['platform'] !== '' ? $row['platform'] : '-', $row['platformChanged']) . '</td>';
         $html .= '</tr>';
         foreach ($row['messages'] as $message) {

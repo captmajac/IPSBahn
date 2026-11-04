@@ -109,6 +109,9 @@ $tests['Board: direction, platform, operator and badge'] = function () {
     check($dep['operator'] === 'NVB' && $dep['badge'] === 'RE' && $dep['line'] === 'RE6', 'operator/badge');
     $arr = BoardBuilder::build($trips, TestRegistry::$now, settings(['board' => 'arr']))[0];
     check($arr['direction'] === 'Löwenstadt Hbf' && $arr['platform'] === '1' && $arr['platformChanged'] === false, 'arr');
+    check($arr['continuesTo'] === 'Grenzstadt' && $dep['continuesTo'] === '', 'onward destination only on arrivals');
+    $ends = BoardBuilder::build([trip('end', 5, ['dep' => null])], TestRegistry::$now, settings(['board' => 'arr']))[0];
+    check($ends['continuesTo'] === '', 'train ends here');
     $ic = BoardBuilder::build([trip('ic', 5, ['line' => 'IC 2000', 'category' => 'IC', 'dep' => ['path' => []]])], TestRegistry::$now, settings())[0];
     check($ic['operator'] === '' && $ic['direction'] === '', 'IC');
 };
