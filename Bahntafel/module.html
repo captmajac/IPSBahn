@@ -30,7 +30,9 @@
     #bt .dir .origin { flex: none; max-width: 100%; }
     #bt .onward { flex: 1; margin-left: 6px; font-size: 0.75em; opacity: 0.7; }
     #bt .time { flex: none; width: 4.4em; text-align: right; font-weight: bold; }
-    #bt .info { width: 0.8em; height: 0.8em; margin-right: 3px; vertical-align: -0.05em; }
+    /* time and info sign centred on one line; the sign no taller than the digits */
+    #bt .time { display: inline-flex; align-items: center; justify-content: flex-end; gap: 0.25em; }
+    #bt .row svg.info { width: 0.7em; height: 0.7em; flex: none; }
     #bt .colhead { font-size: 0.75em; opacity: 0.6; padding-top: 0; padding-bottom: 3px; border-top: none; }
     #bt .colhead .badge { width: 28px; flex: none; }
     #bt .colhead .line, #bt .colhead .time { font-weight: normal; }
@@ -129,7 +131,7 @@
             return;
         }
         const head = el('div', 'row colhead');
-        for (const [className, text] of [['badge', ''], ['line', 'Zug'], ['dir', state.board === 'arr' ? 'Von' : 'Richtung'], ['time', 'Zeit'], ['platform', 'Gl.'], ['dot', '']]) {
+        for (const [className, text] of [['badge', ''], ['line', 'Zug'], ['dir', state.board === 'arr' ? 'Von' : 'Richtung'], ['time', 'Zeit'], ['platform', 'Gleis'], ['dot', '']]) {
             head.appendChild(el('span', className, text));
         }
         list.appendChild(head);
