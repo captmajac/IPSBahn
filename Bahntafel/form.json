@@ -26,8 +26,8 @@
         {
             "type": "RowLayout",
             "items": [
-                { "type": "NumberSpinner", "name": "WalkMinutes", "caption": "Time from home to the station (0 = off)", "suffix": "min", "minimum": 0, "maximum": 120 },
-                { "type": "NumberSpinner", "name": "ToleranceMinutes", "caption": "Tolerance for \"tight\"", "suffix": "min", "minimum": 0, "maximum": 30 }
+                { "type": "NumberSpinner", "name": "WalkMinutes", "caption": "Walking time to the station, relaxed (0 = off)", "suffix": "min", "minimum": 0, "maximum": 120 },
+                { "type": "NumberSpinner", "name": "ToleranceMinutes", "caption": "Of that, saved by hurrying (\"tight\")", "suffix": "min", "minimum": 0, "maximum": 30 }
             ]
         },
         { "type": "NumberSpinner", "name": "IntervalMinutes", "caption": "Update interval", "suffix": "min", "minimum": 15, "maximum": 240 }

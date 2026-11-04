@@ -97,7 +97,7 @@ Zugangsdaten stehen nur in den Instanz-Eigenschaften, nie im Code, in Tests, Fix
    - Echtzeit vor Soll: Wirksam ist die geänderte Zeit bzw. das geänderte Gleis, falls vorhanden.
    - Vergangene Fahrten fallen weg, maßgeblich ist die wirksame Zeit.
    - Filter Gattung, dann Strecke (ausblenden oder als grau markieren), dann Begrenzung auf die Zeilenzahl. Graue Zeilen zählen mit.
-   - Erreichbarkeit nur bei Abfahrt und Wegezeit > 0: Restzeit < Wegezeit → nicht erreichbar, < Wegezeit + Toleranz → knapp, sonst erreichbar.
+   - Erreichbarkeit nur bei Abfahrt und Wegezeit > 0: Wegezeit ist die entspannte Zeit, Toleranz das, was man mit zügigem Gehen spart. Restzeit (nach Planzeit, bei früherer Abfahrt die frühere) < Wegezeit − Toleranz → nicht erreichbar, < Wegezeit → knapp, sonst erreichbar.
    - Ergebnis: Liste von Zeilen mit `id`, `line`, `operator`, `category`, `time`, `delayed`, `platform`, `platformChanged`, `cancelled`, `direction`, `minutesLeft`, `reach`, `offRoute`, `messages` sowie Kopfdaten (Bahnhof, Anzeige, Stand, Fehlerhinweis).
 3. **Ausgeben:** `BoardHtml` schreibt die Variable „Tafel“, die Kachel bekommt dieselben Zeilen als JSON.
 

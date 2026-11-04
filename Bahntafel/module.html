@@ -8,7 +8,14 @@
         font-family: inherit; color: var(--bt-text); height: 100%; box-sizing: border-box; padding: 8px 12px; overflow: hidden;
         display: flex; flex-direction: column;
     }
-    #bt .head { display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.75; padding-bottom: 4px; flex: none; }
+    #bt .head { display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; padding-bottom: 4px; flex: none; }
+    #bt .head #stand { opacity: 0.75; }
+    /* switch between the boards; global for all clients, through RequestAction('Board') */
+    #bt .switch { display: flex; gap: 2px; }
+    #bt .switch button { font: inherit; color: inherit; background: none; border: 1px solid var(--bt-line); padding: 2px 8px; cursor: pointer; opacity: 0.6; }
+    #bt .switch button:first-child { border-radius: 4px 0 0 4px; }
+    #bt .switch button:last-child { border-radius: 0 4px 4px 0; }
+    #bt .switch button.active { opacity: 1; font-weight: bold; background: var(--bt-line); }
     #bt .list { flex: 1; overflow: hidden; }
     #bt .row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-top: 1px solid var(--bt-line); white-space: nowrap; }
     /* trains that cannot or can only just be reached, with their messages */
@@ -35,7 +42,12 @@
 </style>
 
 <div id="bt">
-    <div class="head"><span id="board"></span><span id="stand"></span></div>
+    <div class="head">
+        <span class="switch">
+            <button id="dep" onclick="switchBoard('dep')">Abfahrt</button><button id="arr" onclick="switchBoard('arr')">Ankunft</button>
+        </span>
+        <span id="stand"></span>
+    </div>
     <div class="list" id="list"></div>
     <div class="next" id="next"></div>
 </div>
@@ -125,7 +137,8 @@
     }
 
     function render() {
-        document.getElementById('board').textContent = state.board === 'arr' ? 'Ankunft' : 'Abfahrt';
+        document.getElementById('dep').classList.toggle('active', state.board !== 'arr');
+        document.getElementById('arr').classList.toggle('active', state.board === 'arr');
         const stand = document.getElementById('stand');
         const parts = [];
         if (state.fetchedAt > 0) parts.push('von: ' + clock(state.fetchedAt));
@@ -134,6 +147,14 @@
         stand.className = noticeText[state.notice] ? 'notice' : '';
         renderList();
         renderNext();
+    }
+
+    // the module renders the other board and sends it back through handleMessage
+    function switchBoard(board) {
+        if (state && state.board === board) return;
+        if (typeof requestAction === 'function') {
+            if (board === 'arr') requestAction('Board', 1); else requestAction('Board', 0);
+        }
     }
 
     function handleMessage(data) {

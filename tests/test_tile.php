@@ -45,3 +45,8 @@ $tests['Tile: one SVG per badge of the rows'] = function () {
     check(str_starts_with($payload['badges']['S'], '<svg'), 'svg');
     check($payload['next']['id'] === $payload['rows'][0]['id'], 'next without walk time is the first train');
 };
+
+$tests['Tile: switches between departure and arrival through the module'] = function () {
+    $tile = makeBoard()->GetVisualizationTile();
+    check(str_contains($tile, "requestAction('Board', 0)") && str_contains($tile, "requestAction('Board', 1)"), 'both directions');
+};

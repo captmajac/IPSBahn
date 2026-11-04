@@ -20,7 +20,7 @@ In der Konsole unter *Module Control* die URL `https://github.com/captmajac/IPSB
 3. Optional die Strecke festlegen: zuerst „Bahnhöfe laden“, dann unter „Bahnhof der Strecke“ z. B. `Großstadt Hbf` wählen. Bei „Andere Züge“ entscheidest du, ob Züge, die nicht über diesen Bahnhof fahren, ausgeblendet oder grau dargestellt werden.
    - Abfahrt: Züge, die nach oder über den Bahnhof fahren.
    - Ankunft: Züge, die von dort kommen oder über ihn kommen.
-4. Optional die Wegezeit von zu Hause zum Bahnhof eintragen. Die Abfahrtstafel zeigt dann *erreichbar*, *knapp* oder *nicht erreichbar*.
+4. Optional die Wegezeit von zu Hause zum Bahnhof eintragen, und zwar entspannt gegangen, dazu wie viele Minuten man mit zügigem Gehen spart. Die Abfahrtstafel zeigt dann *erreichbar* (entspannt), *knapp* (nur zügig) oder *nicht erreichbar*.
 5. „Verbindung testen“ prüft die Zugangsdaten.
 
 Unter der Instanz liegen danach:

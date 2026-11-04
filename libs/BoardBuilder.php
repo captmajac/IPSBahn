@@ -82,9 +82,10 @@ class BoardBuilder
         if ($part !== 'dep' || $walk <= 0 || $skip) {
             return null;
         }
-        if ($minutesLeft < $walk) {
+        // walk is the relaxed time, tolerance what hurrying saves
+        if ($minutesLeft < $walk - $settings['tolerance']) {
             return 'missed';
         }
-        return $minutesLeft < $walk + $settings['tolerance'] ? 'tight' : 'ok';
+        return $minutesLeft < $walk ? 'tight' : 'ok';
     }
 }

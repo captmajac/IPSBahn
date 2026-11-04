@@ -91,18 +91,21 @@ $tests['Board: rows limit after filtering, grey rows count'] = function () {
 };
 
 $tests['Board: reachability limits'] = function () {
-    $trips = [trip('19', 19), trip('20', 20), trip('23', 23), trip('24', 24), trip('x', 30, ['dep' => ['cancelled' => true]])];
+    // 20 min relaxed, up to 4 min faster when hurrying
+    $trips = [trip('15', 15), trip('16', 16), trip('19', 19), trip('20', 20), trip('24', 24), trip('x', 30, ['dep' => ['cancelled' => true]])];
     $rows = BoardBuilder::build($trips, TestRegistry::$now, settings(['walk' => 20, 'tolerance' => 4]));
-    check(array_column($rows, 'reach') === ['missed', 'tight', 'tight', 'ok', null], json_encode(array_column($rows, 'reach')));
-    check(array_column(BoardBuilder::build($trips, TestRegistry::$now, settings()), 'reach') === [null, null, null, null, null], 'walk 0');
+    check(array_column($rows, 'reach') === ['missed', 'tight', 'tight', 'ok', 'ok', null], json_encode(array_column($rows, 'reach')));
+    $rows = BoardBuilder::build([trip('0', 0), trip('3', 3)], TestRegistry::$now, settings(['walk' => 3, 'tolerance' => 10]));
+    check(array_column($rows, 'reach') === ['tight', 'ok'], 'tolerance larger than the walk');
+    check(array_column(BoardBuilder::build($trips, TestRegistry::$now, settings()), 'reach') === array_fill(0, 6, null), 'walk 0');
     check(array_unique(array_column(BoardBuilder::build($trips, TestRegistry::$now, settings(['walk' => 20, 'board' => 'arr'])), 'reach')) === [null], 'arrival');
 };
 
 $tests['Board: reachability from the planned time, a delay may shrink'] = function () {
     $now = TestRegistry::$now;
-    $rows = BoardBuilder::build([trip('late', 23, ['dep' => ['changed' => $now + 30 * 60]])], $now, settings(['walk' => 20, 'tolerance' => 4]));
+    $rows = BoardBuilder::build([trip('late', 18, ['dep' => ['changed' => $now + 30 * 60]])], $now, settings(['walk' => 20, 'tolerance' => 4]));
     check($rows[0]['minutesLeft'] === 30 && $rows[0]['reach'] === 'tight', json_encode($rows[0]['reach']));
-    $rows = BoardBuilder::build([trip('early', 30, ['dep' => ['changed' => $now + 19 * 60]])], $now, settings(['walk' => 20, 'tolerance' => 4]));
+    $rows = BoardBuilder::build([trip('early', 30, ['dep' => ['changed' => $now + 15 * 60]])], $now, settings(['walk' => 20, 'tolerance' => 4]));
     check($rows[0]['reach'] === 'missed', 'earlier than planned counts');
 };
 
