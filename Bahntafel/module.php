@@ -60,10 +60,6 @@ class Bahntafel extends IPSModule
         $this->RegisterAttributeInteger('LastFetch', 0);
         // hours after the current one the last update needed to fill the rows
         $this->RegisterAttributeInteger('AheadHours', 1);
-        // name the module last gave the board variable
-        $this->RegisterAttributeString('BoardName', '');
-        // name the module last gave the instance
-        $this->RegisterAttributeString('InstanceName', '');
 
         foreach (['Update', 'Recalc'] as $timer) {
             $this->RegisterTimer($timer, 0, 'IPS_RequestAction($_IPS[\'TARGET\'], "' . $timer . '", "");');
@@ -80,13 +76,11 @@ class Bahntafel extends IPSModule
 
         $this->MaintainVariable('Board', $this->Translate("Board"), 1, $this->boardPresentation(), self::POS_BOARD, true);
         $this->EnableAction('Board');
+        // name and icon are set once on creation, afterwards they belong to the user
+        $created = @$this->GetIDForIdent('BoardHtml') === false;
         $this->RegisterVariableString('BoardHtml', $this->Translate("Timetable"), '~HTMLBox', self::POS_HTML);
-        $this->nameInstance();
-        // standard icons for the WebFront; icons the user chose stay
-        foreach ([$this->InstanceID => 'train', $this->GetIDForIdent('BoardHtml') => 'clock'] as $id => $icon) {
-            if (IPS_GetObject($id)['ObjectIcon'] === '') {
-                IPS_SetIcon($id, $icon);
-            }
+        if ($created) {
+            IPS_SetIcon($this->GetIDForIdent('BoardHtml'), 'clock');
         }
 
         $eva = $this->station()['eva'] ?? '';
@@ -175,6 +169,9 @@ class Bahntafel extends IPSModule
             case 'TestConnection':
                 $this->testConnection();
                 break;
+            case 'NameInstance':
+                $this->nameInstance();
+                break;
             default:
                 throw new Exception("Invalid Ident $Ident");
         }
@@ -256,33 +253,7 @@ class Bahntafel extends IPSModule
             'walk'      => $this->ReadPropertyInteger('WalkMinutes'),
         ];
         $this->SetValue('BoardHtml', BoardHtml::render($payload['rows'], $meta));
-        $this->nameBoardVariable();
         $this->UpdateVisualizationValue(json_encode($payload));
-    }
-
-    // the station as instance name, which is also the title of the tile; a name the user gave stays
-    private function nameInstance(): void
-    {
-        $name = $this->station()['name'] ?? 'Bahntafel';
-        $current = IPS_GetName($this->InstanceID);
-        if ($current !== $name && in_array($current, ['Bahntafel', $this->ReadAttributeString('InstanceName')], true)) {
-            IPS_SetName($this->InstanceID, $name);
-        }
-        $this->WriteAttributeString('InstanceName', $name);
-    }
-
-    // "Abfahrt <station>" or "Ankunft <station>"; a name the user gave stays
-    private function nameBoardVariable(): void
-    {
-        $station = $this->station();
-        $name = $station === null ? $this->Translate("Timetable")
-            : $this->Translate($this->board() === 'arr' ? "Arrival" : "Departure") . ' ' . $station['name'];
-        $id = $this->GetIDForIdent('BoardHtml');
-        $current = IPS_GetName($id);
-        if ($current !== $name && in_array($current, [$this->Translate("Timetable"), $this->ReadAttributeString('BoardName')], true)) {
-            IPS_SetName($id, $name);
-        }
-        $this->WriteAttributeString('BoardName', $name);
     }
 
     // rows of the loaded trips, or of the given ones
@@ -385,6 +356,18 @@ class Bahntafel extends IPSModule
         $this->UpdateFormField('Message', 'visible', true);
     }
 
+    // only on the user's click: the instance name belongs to the user
+    private function nameInstance(): void
+    {
+        $station = $this->station();
+        if ($station === null) {
+            $this->message($this->Translate("Please choose a station first"));
+            return;
+        }
+        IPS_SetName($this->InstanceID, $station['name']);
+        $this->message(sprintf($this->Translate("Instance renamed: %s"), $station['name']));
+    }
+
     private function errorText(TimetablesException $e): string
     {
         return $e instanceof TimetablesAuthException
@@ -436,7 +419,6 @@ class Bahntafel extends IPSModule
         $option = fn (int $value, string $caption) => ['Value' => $value, 'Caption' => $caption, 'IconActive' => false, 'IconValue' => '', 'Color' => -1];
         return [
             'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-            'ICON'         => 'train',
             'OPTIONS'      => json_encode([$option(0, $this->Translate("Departure")), $option(1, $this->Translate("Arrival"))]),
         ];
     }

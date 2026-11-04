@@ -1,7 +1,7 @@
 <?php
 
 // Saves real DB Timetables API responses as test fixtures.
-// Usage: DB_CLIENT_ID=... DB_API_KEY=... ../tools/php/php tools/capture-fixtures.php <eva>
+// Usage: DB_CLIENT_ID=... DB_API_KEY=... ../tools/php/php tests/capture-fixtures.php <eva>
 // The credentials are only read from the environment and never written to a file.
 
 date_default_timezone_set('Europe/Berlin');
@@ -10,7 +10,7 @@ $eva = $argv[1] ?? '';
 $clientId = getenv('DB_CLIENT_ID') ?: '';
 $apiKey = getenv('DB_API_KEY') ?: '';
 if (!preg_match('/^\d{7}$/', $eva) || $clientId === '' || $apiKey === '') {
-    fwrite(STDERR, "Usage: DB_CLIENT_ID=... DB_API_KEY=... php tools/capture-fixtures.php <eva>\n");
+    fwrite(STDERR, "Usage: DB_CLIENT_ID=... DB_API_KEY=... php tests/capture-fixtures.php <eva>\n");
     exit(1);
 }
 
@@ -24,7 +24,7 @@ $paths = [
     'station' => 'station/' . $eva,
 ];
 
-$dir = __DIR__ . '/../tests/fixtures/raw';
+$dir = __DIR__ . '/fixtures/raw';
 if (!is_dir($dir)) {
     mkdir($dir, 0755, true);
 }

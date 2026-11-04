@@ -2,7 +2,7 @@
 
 Stand 2026-11-04: **synthetische** Antworten im Format der DB Timetables API für einen erfundenen Bahnhof „WohnortBahnhof“ (EVA 8099001) mit erfundenen Nachbarbahnhöfen, Linien und Betreibern.
 
-Echte Antworten holt `tools/capture-fixtures.php <eva>` nach `tests/fixtures/raw/`. Sie werden nicht eingecheckt, weil sie den Bahnhof und damit den Wohnort verraten. Ein Abgleich am 04.11.2026 ergab:
+Echte Antworten holt `tests/capture-fixtures.php <eva>` nach `tests/fixtures/raw/`. Sie werden nicht eingecheckt, weil sie den Bahnhof und damit den Wohnort verraten. Ein Abgleich am 04.11.2026 ergab:
 - Der Aufbau von `plan` und `fchg` entspricht den synthetischen Dateien (zusätzlich ein ungenutztes Attribut `fb`).
 - Meldungen kommen nur als Code: `t="d"` (z. B. 5, 31, 34, 36, 43, 45, 57, 99) und `t="q"` (95, 97). HIM-Meldungen (`t="h"`) mit Text gab es nicht. Code 54 steht nicht in `MessageCodes` und wird weggelassen.
 - `fchg` enthält Stops über viele Stunden. `cp` ist oft gleich dem Sollgleis, `cs="c"` markiert Ausfälle.

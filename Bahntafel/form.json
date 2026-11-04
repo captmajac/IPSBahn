@@ -37,6 +37,7 @@
         { "type": "Button", "caption": "Search", "onClick": "IPS_RequestAction($id, 'SearchStation', $Search);" },
         { "type": "Button", "caption": "Load stations", "onClick": "IPS_RequestAction($id, 'LoadStations', '');" },
         { "type": "Button", "caption": "Test connection", "onClick": "IPS_RequestAction($id, 'TestConnection', '');" },
+        { "type": "Button", "caption": "Name instance after the station", "onClick": "IPS_RequestAction($id, 'NameInstance', '');" },
         { "type": "PopupAlert", "name": "Message", "visible": false, "popup": { "items": [{ "type": "Label", "name": "MessageText", "caption": "" }] } }
     ],
     "status": [

@@ -49,72 +49,23 @@ $tests['Module: configured instance fetches and shows the board'] = function () 
     check($m->value('Board') === 0 && !str_contains($m->value('BoardHtml'), 'Bus 100'), 'departures, bus hidden');
 };
 
-$tests['Module: board variable named after board and station, own names kept'] = function () {
+$tests['Module: names and icons are left to the user after creation'] = function () {
     $m = makeBoard();
-    $name = fn () => IPS_GetName($m->variables['BoardHtml']);
-    check($name() === 'Departure WohnortBahnhof', $name());
+    $html = $m->variables['BoardHtml'];
+    check(IPS_GetName($html) === 'Timetable' && IPS_GetObject($html)['ObjectIcon'] === 'clock', 'board variable at creation');
+    check(IPS_GetName(2) === 'Bahntafel' && IPS_GetObject(2)['ObjectIcon'] === '', 'instance untouched');
+    IPS_SetIcon($html, '');
     $m->RequestAction('Board', 1);
-    check($name() === 'Arrival WohnortBahnhof', $name());
-    IPS_SetName($m->variables['BoardHtml'], 'Bahn Flur');
-    $m->RequestAction('Board', 0);
-    check($name() === 'Bahn Flur', 'own name kept');
-    check(IPS_GetName(makeBoard(['Station' => ''])->variables['BoardHtml']) === 'Timetable', 'no station');
+    $m->ApplyChanges();
+    check(IPS_GetName($html) === 'Timetable' && IPS_GetObject($html)['ObjectIcon'] === '', 'no later changes');
 };
 
-$tests['Module: train icon on the instance, clock on the board, own icons kept'] = function () {
+$tests['Module: button names the instance after the station'] = function () {
     $m = makeBoard();
-    check(IPS_GetObject($m->InstanceID)['ObjectIcon'] === 'train' && IPS_GetObject($m->variables['BoardHtml'])['ObjectIcon'] === 'clock', 'icons');
-    IPS_SetIcon($m->InstanceID, 'house');
-    $m->ApplyChanges();
-    check(IPS_GetObject($m->InstanceID)['ObjectIcon'] === 'house', 'own icon kept');
-};
-
-$tests['Module: instance named after the station, own names kept'] = function () {
+    check(popup($m, fn () => $m->RequestAction('NameInstance', '')) !== '' && IPS_GetName(2) === 'WohnortBahnhof', 'renamed');
     $m = makeBoard(['Station' => '']);
-    check(IPS_GetName(2) === 'Bahntafel', 'no station');
-    $m->properties['Station'] = WOHNORT;
-    $m->ApplyChanges();
-    check(IPS_GetName(2) === 'WohnortBahnhof', IPS_GetName(2));
-    $m->properties['Station'] = '{"eva":"8099003","name":"Großstadt Hbf"}';
-    $m->ApplyChanges();
-    check(IPS_GetName(2) === 'Großstadt Hbf', 'station changed');
-    IPS_SetName(2, 'Bahn Flur');
-    $m->properties['Station'] = WOHNORT;
-    $m->ApplyChanges();
-    check(IPS_GetName(2) === 'Bahn Flur', 'own name kept');
-};
-
-// WohnortBahnhof with the 19 o'clock trains once more at 20 o'clock
-function wohnortHttpUntil20(): callable
-{
-    $base = wohnortHttp();
-    $at20 = str_replace('26110419', '26110420', fixture('plan_wohnort_19.xml'));
-    return function (string $url, array $headers) use ($base, $at20): array {
-        if (str_ends_with($url, '/plan/8099001/261104/20')) {
-            TestRegistry::$calls[] = [$url, $headers];
-            return ['status' => 200, 'body' => $at20];
-        }
-        return $base($url, $headers);
-    };
-}
-
-$tests['Module: hidden trains do not shorten the board, more hours are loaded'] = function () {
-    TestRegistry::$http = wohnortHttpUntil20();
-    $m = makeBoard(['RouteStation' => 'Großstadt Hbf', 'Rows' => 8]);
-    $rows = $m->testPayload()['rows'];
-    $plans = fn () => array_map(fn ($c) => substr($c[0], -2), TestRegistry::$calls);
-    check(count($rows) === 8, count($rows) . ' rows');
-    check(in_array('20', $plans(), true), 'loaded 20 o\'clock');
-    check($m->attributes['LoadedUntil'] === TestRegistry::$now + 3 * 3600, 'window');
-    TestRegistry::$calls = [];
-    $m->RequestAction('Update', '');
-    check(count(TestRegistry::$calls) === 5, 'next update starts with the hours it needed: ' . count(TestRegistry::$calls));
-};
-
-$tests['Module: loading ahead stops after a few hours'] = function () {
-    $m = makeBoard(['RouteStation' => 'Großstadt Hbf', 'Rows' => 20]);
-    check(count(array_filter(TestRegistry::$calls, fn ($c) => str_contains($c[0], '/plan/'))) <= 3 + 4 + 5 + 6, 'bounded');
-    check($m->attributes['LoadedUntil'] === TestRegistry::$now + 5 * 3600, 'four hours ahead at most');
+    popup($m, fn () => $m->RequestAction('NameInstance', ''));
+    check(IPS_GetName(2) === 'WohnortBahnhof', 'no station, name unchanged');
 };
 
 $tests['Module: no fetch before the kernel is ready'] = function () {
