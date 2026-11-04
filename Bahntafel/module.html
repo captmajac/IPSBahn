@@ -1,5 +1,6 @@
 <style>
-    /* Theme colors of the tile visualization (--content-color, --accent-color), as in the doorstation tiles */
+    /* design colors of the tile visualization passed by the HTML-SDK: --content-color (text), --accent-color and
+       --on-accent-color (controls); fallbacks are the Symcon defaults */
     #bt {
         --bt-text: var(--content-color, inherit);
         --bt-line: rgba(127, 127, 127, 0.25);
@@ -15,7 +16,7 @@
     #bt .switch button { font: inherit; color: inherit; background: none; border: 1px solid var(--bt-line); padding: 2px 8px; cursor: pointer; opacity: 0.6; }
     #bt .switch button:first-child { border-radius: 4px 0 0 4px; }
     #bt .switch button:last-child { border-radius: 0 4px 4px 0; }
-    #bt .switch button.active { opacity: 1; font-weight: bold; background: var(--bt-line); }
+    #bt .switch button.active { opacity: 1; font-weight: bold; background: var(--accent-color, #00CDAB); border-color: var(--accent-color, #00CDAB); color: var(--on-accent-color, #FFFFFF); }
     #bt .list { flex: 1; overflow: hidden; }
     #bt .row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-top: 1px solid var(--bt-line); white-space: nowrap; }
     /* trains that cannot or can only just be reached, with their messages */
