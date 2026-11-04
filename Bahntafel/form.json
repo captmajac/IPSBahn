@@ -5,8 +5,8 @@
         { "type": "PasswordTextBox", "name": "ApiKey", "caption": "API key", "width": "400px" },
         { "type": "Label", "caption": "Home station: enter a name below under \"Search station\", then choose it here" },
         { "type": "Select", "name": "Station", "caption": "Station", "width": "400px", "options": [] },
-        { "type": "Label", "caption": "Route (optional): only trains to or from this station; \"Load stations\" below fills the list" },
-        { "type": "Select", "name": "RouteStation", "caption": "Route station", "width": "400px", "options": [] },
+        { "type": "Label", "caption": "Direction (optional): only trains that stop at this station, on departures after, on arrivals before the home station; \"Load stations\" below fills the list" },
+        { "type": "Select", "name": "RouteStation", "caption": "Via station", "width": "400px", "options": [] },
         {
             "type": "Select", "name": "OffRoute", "caption": "Other trains",
             "options": [
@@ -23,15 +23,21 @@
         { "type": "CheckBox", "name": "ShowOther", "caption": "Other" },
         { "type": "NumberSpinner", "name": "Rows", "caption": "Rows on the board", "minimum": 1, "maximum": 20 },
         { "type": "Label", "caption": "Reachability (departures only)" },
-        { "type": "NumberSpinner", "name": "WalkMinutes", "caption": "Time from home to the station (0 = off)", "suffix": "min", "minimum": 0, "maximum": 120 },
-        { "type": "NumberSpinner", "name": "ToleranceMinutes", "caption": "Tolerance for \"tight\"", "suffix": "min", "minimum": 0, "maximum": 30 },
+        {
+            "type": "RowLayout",
+            "items": [
+                { "type": "NumberSpinner", "name": "WalkMinutes", "caption": "Time from home to the station (0 = off)", "suffix": "min", "minimum": 0, "maximum": 120 },
+                { "type": "NumberSpinner", "name": "ToleranceMinutes", "caption": "Tolerance for \"tight\"", "suffix": "min", "minimum": 0, "maximum": 30 }
+            ]
+        },
         { "type": "NumberSpinner", "name": "IntervalMinutes", "caption": "Update interval", "suffix": "min", "minimum": 15, "maximum": 240 }
     ],
     "actions": [
         { "type": "ValidationTextBox", "name": "Search", "caption": "Search station", "width": "400px" },
         { "type": "Button", "caption": "Search", "onClick": "IPS_RequestAction($id, 'SearchStation', $Search);" },
         { "type": "Button", "caption": "Load stations", "onClick": "IPS_RequestAction($id, 'LoadStations', '');" },
-        { "type": "Button", "caption": "Test connection", "onClick": "IPS_RequestAction($id, 'TestConnection', '');" }
+        { "type": "Button", "caption": "Test connection", "onClick": "IPS_RequestAction($id, 'TestConnection', '');" },
+        { "type": "PopupAlert", "name": "Message", "visible": false, "popup": { "items": [{ "type": "Label", "name": "MessageText", "caption": "" }] } }
     ],
     "status": [
         { "code": 201, "icon": "inactive", "caption": "Please enter station and credentials" },

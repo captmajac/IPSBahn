@@ -57,6 +57,8 @@ class Bahntafel extends IPSModule
         // '' | 'failed' | 'noRealtime' of the last update
         $this->RegisterAttributeString('Notice', '');
         $this->RegisterAttributeInteger('LastFetch', 0);
+        // name the module last gave the board variable
+        $this->RegisterAttributeString('BoardName', '');
 
         foreach (['Update', 'Recalc'] as $timer) {
             $this->RegisterTimer($timer, 0, 'IPS_RequestAction($_IPS[\'TARGET\'], "' . $timer . '", "");');
@@ -229,7 +231,22 @@ class Bahntafel extends IPSModule
             'walk'      => $this->ReadPropertyInteger('WalkMinutes'),
         ];
         $this->SetValue('BoardHtml', BoardHtml::render($payload['rows'], $meta));
+        $this->nameBoardVariable();
         $this->UpdateVisualizationValue(json_encode($payload));
+    }
+
+    // "Abfahrt <station>" or "Ankunft <station>"; a name the user gave stays
+    private function nameBoardVariable(): void
+    {
+        $station = $this->station();
+        $name = $station === null ? $this->Translate("Timetable")
+            : $this->Translate($this->board() === 'arr' ? "Arrival" : "Departure") . ' ' . $station['name'];
+        $id = $this->GetIDForIdent('BoardHtml');
+        $current = IPS_GetName($id);
+        if ($current !== $name && in_array($current, [$this->Translate("Timetable"), $this->ReadAttributeString('BoardName')], true)) {
+            IPS_SetName($id, $name);
+        }
+        $this->WriteAttributeString('BoardName', $name);
     }
 
     private function rows(): array
@@ -277,11 +294,11 @@ class Bahntafel extends IPSModule
         try {
             $stations = $pattern === '' ? [] : $this->client()->searchStations($pattern);
         } catch (TimetablesException $e) {
-            echo $this->errorText($e);
+            $this->message($this->errorText($e));
             return;
         }
         if ($stations === []) {
-            echo $this->Translate("No station found");
+            $this->message($this->Translate("No station found"));
             return;
         }
         // the current value stays selectable, otherwise the form cannot be saved
@@ -318,10 +335,17 @@ class Bahntafel extends IPSModule
     {
         try {
             $stations = $this->client()->searchStations($this->station()['eva'] ?? 'Berlin Hbf');
-            echo sprintf($this->Translate("OK: %d station(s) found"), count($stations));
+            $this->message(sprintf($this->Translate("OK: %d station(s) found"), count($stations)));
         } catch (TimetablesException $e) {
-            echo $this->errorText($e);
+            $this->message($this->errorText($e));
         }
+    }
+
+    // popup in the configuration form; an echo from RequestAction shows up as a PHP warning with file and line
+    private function message(string $text): void
+    {
+        $this->UpdateFormField('MessageText', 'caption', $text);
+        $this->UpdateFormField('Message', 'visible', true);
     }
 
     private function errorText(TimetablesException $e): string

@@ -117,3 +117,10 @@ $tests['Convention: shared libs do not depend on Symcon'] = function () {
         check(preg_match('/\\bIPS_|\\$this->(Read|Write|Register|Set)/', file_get_contents($file)) === 0, basename($file));
     }
 };
+
+$tests['Form: tolerance next to the walking time'] = function () {
+    $form = json_decode(file_get_contents(__DIR__ . '/../Bahntafel/form.json'), true);
+    $rows = array_filter($form['elements'], fn ($e) => $e['type'] === 'RowLayout');
+    $together = array_filter($rows, fn ($r) => array_column($r['items'], 'name') === ['WalkMinutes', 'ToleranceMinutes']);
+    check(count($together) === 1, 'one row with walk and tolerance');
+};

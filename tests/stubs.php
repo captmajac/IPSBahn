@@ -130,3 +130,4 @@ class IPSModule
 
 function IPS_GetKernelRunlevel() { return TestRegistry::$runlevel; }
 function IPS_GetName($ID) { return TestRegistry::$objects[$ID]['name'] ?? "Object #$ID"; }
+function IPS_SetName($ID, $Name) { TestRegistry::$objects[$ID]['name'] = $Name; return true; }

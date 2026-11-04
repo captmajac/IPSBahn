@@ -12,6 +12,20 @@ function lastFormUpdate(IPSModule $m, string $field): array
     throw new CheckFailed("no options for $field");
 }
 
+// text of the message popup an action opened, nothing echoed
+function popup(IPSModule $m, callable $action): string
+{
+    $m->formUpdates = [];
+    check(echoed($action) === '', 'no echo');
+    check(in_array(['Message', 'visible', true], $m->formUpdates, true), 'popup shown');
+    foreach (array_reverse($m->formUpdates) as [$f, $parameter, $value]) {
+        if ($f === 'MessageText' && $parameter === 'caption') {
+            return $value;
+        }
+    }
+    throw new CheckFailed('no popup text');
+}
+
 $tests['Module: without station or credentials no requests and a hint'] = function () {
     foreach ([['Station' => ''], ['ApiKey' => ''], ['ClientId' => '']] as $props) {
         TestRegistry::reset();
@@ -33,6 +47,18 @@ $tests['Module: configured instance fetches and shows the board'] = function () 
     check($m->timers['Update']['interval'] === 3600000 && $m->timers['Recalc']['interval'] === 60000, 'timers');
     check(in_array('Board', $m->actions, true) && $m->presentations['BoardHtml'] === '~HTMLBox', 'variables');
     check($m->value('Board') === 0 && !str_contains($m->value('BoardHtml'), 'Bus 100'), 'departures, bus hidden');
+};
+
+$tests['Module: board variable named after board and station, own names kept'] = function () {
+    $m = makeBoard();
+    $name = fn () => IPS_GetName($m->variables['BoardHtml']);
+    check($name() === 'Departure WohnortBahnhof', $name());
+    $m->RequestAction('Board', 1);
+    check($name() === 'Arrival WohnortBahnhof', $name());
+    IPS_SetName($m->variables['BoardHtml'], 'Bahn Flur');
+    $m->RequestAction('Board', 0);
+    check($name() === 'Bahn Flur', 'own name kept');
+    check(IPS_GetName(makeBoard(['Station' => ''])->variables['BoardHtml']) === 'Timetable', 'no station');
 };
 
 $tests['Module: no fetch before the kernel is ready'] = function () {
@@ -135,9 +161,9 @@ $tests['Module: station search keeps the current value in the list'] = function 
 
 $tests['Module: station search without result or with an error says so'] = function () {
     $m = makeBoard();
-    check(str_contains(echoed(fn () => $m->RequestAction('SearchStation', 'Xyz')), 'No station found'), 'none');
+    check(str_contains(popup($m, fn () => $m->RequestAction('SearchStation', 'Xyz')), 'No station found'), 'none');
     TestRegistry::$http = fakeHttp(['/station/WohnortBahnhof' => [401, '']]);
-    check(str_contains(echoed(fn () => $m->RequestAction('SearchStation', 'WohnortBahnhof')), 'credentials'), 'auth');
+    check(str_contains(popup($m, fn () => $m->RequestAction('SearchStation', 'WohnortBahnhof')), 'credentials'), 'auth');
 };
 
 $tests['Module: route stations from both boards'] = function () {
@@ -154,9 +180,9 @@ $tests['Module: route stations from both boards'] = function () {
 
 $tests['Module: test connection'] = function () {
     $m = makeBoard();
-    check(str_contains(echoed(fn () => $m->RequestAction('TestConnection', '')), 'OK'), 'ok');
+    check(str_contains(popup($m, fn () => $m->RequestAction('TestConnection', '')), 'OK'), 'ok');
     TestRegistry::$http = fakeHttp(['/station/8099001' => [401, '']]);
-    check(str_contains(echoed(fn () => $m->RequestAction('TestConnection', '')), 'credentials'), 'auth');
+    check(str_contains(popup($m, fn () => $m->RequestAction('TestConnection', '')), 'credentials'), 'auth');
 };
 
 $tests['Module: configuration form keeps the current station and route in the lists'] = function () {
