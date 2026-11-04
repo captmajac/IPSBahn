@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='WohnortBahnhof' eva='8099001'>
+<s id="-7004-2611041819-4" eva="8099001"><ar ct="2611041830" cp="3"><m id="r1" t="d" c="43" ts="2611041740"/></ar><dp ct="2611041831" cp="3"><m id="r2" t="d" c="43" ts="2611041740"/></dp></s>
+<s id="-7002-2611041806-1" eva="8099001"><m id="r3" t="h" from="2611040400" to="2611060400" cat="Bauarbeiten zwischen WohnortBahnhof und Löwenstadt" ts="2611040300" pr="2"/><dp cs="c" clt="2611041700"/></s>
+<s id="-7006-2611041837-2" eva="8099001"><ar ct="2611041840"/><dp ct="2611041841"/></s>
+<s id="-7003-2611041806-6" eva="8099001"><ar ct="2611041805"/><dp ct="2611041806"/></s>
+<s id="-9999-2611041500-1" eva="8099001"><dp ct="2611041510"/></s>
+<s id="-7008-2611041854-3" eva="8099001"><dp><m id="r4" t="q" c="70" ts="2611041700"/></dp></s>
+</timetable>

@@ -1,0 +1,40 @@
+{
+    "elements": [
+        { "type": "Label", "caption": "Access to the DB API Marketplace (API \"Timetables\")" },
+        { "type": "ValidationTextBox", "name": "ClientId", "caption": "Client ID", "width": "400px" },
+        { "type": "PasswordTextBox", "name": "ApiKey", "caption": "API key", "width": "400px" },
+        { "type": "Label", "caption": "Home station: enter a name below under \"Search station\", then choose it here" },
+        { "type": "Select", "name": "Station", "caption": "Station", "width": "400px", "options": [] },
+        { "type": "Label", "caption": "Route (optional): only trains to or from this station; \"Load stations\" below fills the list" },
+        { "type": "Select", "name": "RouteStation", "caption": "Route station", "width": "400px", "options": [] },
+        {
+            "type": "Select", "name": "OffRoute", "caption": "Other trains",
+            "options": [
+                { "caption": "Hide", "value": 0 },
+                { "caption": "Show grey", "value": 1 }
+            ]
+        },
+        { "type": "Label", "caption": "Trains" },
+        { "type": "CheckBox", "name": "ShowLong", "caption": "Long distance (ICE, IC, EC)" },
+        { "type": "CheckBox", "name": "ShowRegional", "caption": "Regional (RE, RB)" },
+        { "type": "CheckBox", "name": "ShowSBahn", "caption": "S-Bahn" },
+        { "type": "CheckBox", "name": "ShowBus", "caption": "Bus" },
+        { "type": "CheckBox", "name": "ShowTram", "caption": "Tram" },
+        { "type": "CheckBox", "name": "ShowOther", "caption": "Other" },
+        { "type": "NumberSpinner", "name": "Rows", "caption": "Rows on the board", "minimum": 1, "maximum": 20 },
+        { "type": "Label", "caption": "Reachability (departures only)" },
+        { "type": "NumberSpinner", "name": "WalkMinutes", "caption": "Time from home to the station (0 = off)", "suffix": "min", "minimum": 0, "maximum": 120 },
+        { "type": "NumberSpinner", "name": "ToleranceMinutes", "caption": "Tolerance for \"tight\"", "suffix": "min", "minimum": 0, "maximum": 30 },
+        { "type": "NumberSpinner", "name": "IntervalMinutes", "caption": "Update interval", "suffix": "min", "minimum": 15, "maximum": 240 }
+    ],
+    "actions": [
+        { "type": "ValidationTextBox", "name": "Search", "caption": "Search station", "width": "400px" },
+        { "type": "Button", "caption": "Search", "onClick": "IPS_RequestAction($id, 'SearchStation', $Search);" },
+        { "type": "Button", "caption": "Load stations", "onClick": "IPS_RequestAction($id, 'LoadStations', '');" },
+        { "type": "Button", "caption": "Test connection", "onClick": "IPS_RequestAction($id, 'TestConnection', '');" }
+    ],
+    "status": [
+        { "code": 201, "icon": "inactive", "caption": "Please enter station and credentials" },
+        { "code": 202, "icon": "error", "caption": "Credentials rejected by the DB API" }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "translations": {
+        "de": {
+            "Access to the DB API Marketplace (API \"Timetables\")": "Zugang zum DB API Marketplace (API „Timetables“)",
+            "Client ID": "Client-ID",
+            "API key": "API-Key",
+            "Home station: enter a name below under \"Search station\", then choose it here": "Heimatbahnhof: unten bei „Bahnhof suchen“ einen Namen eingeben, dann hier auswählen",
+            "Station": "Bahnhof",
+            "Route (optional): only trains to or from this station; \"Load stations\" below fills the list": "Strecke (optional): nur Züge nach bzw. von diesem Bahnhof; „Bahnhöfe laden“ unten füllt die Liste",
+            "Route station": "Bahnhof der Strecke",
+            "Other trains": "Andere Züge",
+            "Hide": "ausblenden",
+            "Show grey": "grau darstellen",
+            "Trains": "Züge",
+            "Long distance (ICE, IC, EC)": "Fernverkehr (ICE, IC, EC)",
+            "Regional (RE, RB)": "Regionalverkehr (RE, RB)",
+            "S-Bahn": "S-Bahn",
+            "Bus": "Bus",
+            "Tram": "Tram",
+            "Other": "Sonstige",
+            "Rows on the board": "Zeilen auf der Tafel",
+            "Reachability (departures only)": "Erreichbarkeit (nur Abfahrt)",
+            "Time from home to the station (0 = off)": "Wegezeit von zu Hause zum Bahnhof (0 = aus)",
+            "Tolerance for \"tight\"": "Toleranz für „knapp“",
+            "Update interval": "Aktualisierungsintervall",
+            "Search station": "Bahnhof suchen",
+            "Search": "Suchen",
+            "Load stations": "Bahnhöfe laden",
+            "Test connection": "Verbindung testen",
+            "Please enter station and credentials": "Bitte Bahnhof und Zugangsdaten eintragen",
+            "Credentials rejected by the DB API": "Zugangsdaten von der DB API abgelehnt",
+            "Board": "Anzeige",
+            "Timetable": "Tafel",
+            "(none)": "(keiner)",
+            "No station found": "Kein Bahnhof gefunden",
+            "OK: %d station(s) found": "OK: %d Bahnhof/Bahnhöfe gefunden",
+            "The DB API rejected the credentials": "Die DB API hat die Zugangsdaten abgelehnt",
+            "The DB API could not be reached": "Die DB API ist nicht erreichbar",
+            "Departure": "Abfahrt",
+            "Arrival": "Ankunft"
+        }
+    }
+}

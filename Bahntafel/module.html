@@ -1,0 +1,144 @@
+<style>
+    /* Theme colors of the tile visualization (--content-color, --accent-color), as in the doorstation tiles */
+    #bt {
+        --bt-text: var(--content-color, inherit);
+        --bt-line: rgba(127, 127, 127, 0.25);
+        --bt-line: color-mix(in srgb, var(--content-color, #7F7F7F) 20%, transparent);
+        --bt-green: #43A047; --bt-orange: #FB8C00; --bt-red: #E53935;
+        font-family: inherit; color: var(--bt-text); height: 100%; box-sizing: border-box; padding: 8px 12px; overflow: hidden;
+        display: flex; flex-direction: column;
+    }
+    #bt .head { display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.75; padding-bottom: 4px; flex: none; }
+    #bt .list { flex: 1; overflow: hidden; }
+    #bt .row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--bt-line); white-space: nowrap; }
+    #bt .row svg, #bt .next svg { flex: none; width: 28px; height: 18px; }
+    #bt .line { width: 3.4em; flex: none; font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
+    #bt .dir { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    #bt .time { flex: none; font-weight: bold; }
+    #bt .platform { flex: none; width: 2em; text-align: right; }
+    #bt .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+    #bt .red { color: var(--bt-red); }
+    #bt .grey { opacity: 0.5; }
+    #bt .message { padding: 0 0 6px 36px; color: var(--bt-orange); font-size: 0.8em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #bt .hint { padding: 6px 0; opacity: 0.75; }
+    #bt .notice { color: var(--bt-orange); }
+    #bt .next { display: none; }
+    #bt .next .big { font-size: 2em; margin: 4px 0 2px; }
+    #bt .next .sub { font-size: 0.85em; }
+    #bt .next .dir { font-size: 0.8em; opacity: 0.75; display: block; }
+    body.small #bt .list { display: none; }
+    body.small #bt .next { display: block; }
+</style>
+
+<div id="bt">
+    <div class="head"><span id="board"></span><span id="stand"></span></div>
+    <div class="list" id="list"></div>
+    <div class="next" id="next"></div>
+</div>
+
+<script>
+    // Texts are German on purpose, like the HTML box of the module
+    const reachColor = { ok: 'var(--bt-green)', tight: 'var(--bt-orange)', missed: 'var(--bt-red)' };
+    const noticeText = { failed: 'Aktualisierung fehlgeschlagen', noRealtime: 'ohne Echtzeitdaten', stale: 'Daten veraltet' };
+    let state = null;
+
+    function el(tag, className, text) {
+        const e = document.createElement(tag);
+        if (className) e.className = className;
+        if (text !== undefined) e.textContent = text;
+        return e;
+    }
+
+    function clock(ts) {
+        const d = new Date(ts * 1000);
+        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    }
+
+    // badge SVGs come from the module (TrainBadge), never from API texts
+    function badge(label) {
+        const span = el('span');
+        span.innerHTML = state.badges[label] || '';
+        return span.firstChild || span;
+    }
+
+    function rowOf(row) {
+        const r = el('div', 'row' + (row.cancelled || row.offRoute ? ' grey' : ''));
+        r.appendChild(badge(row.badge));
+        r.appendChild(el('span', 'line', row.line));
+        r.appendChild(el('span', 'dir', row.direction));
+        if (row.cancelled) {
+            r.appendChild(el('span', 'red', 'fällt aus'));
+            return r;
+        }
+        r.appendChild(el('span', 'time' + (row.delayed ? ' red' : ''), clock(row.time)));
+        r.appendChild(el('span', 'platform' + (row.platformChanged ? ' red' : ''), row.platform));
+        const dot = el('span', 'dot');
+        dot.style.background = reachColor[row.reach] || 'transparent';
+        r.appendChild(dot);
+        return r;
+    }
+
+    function renderList() {
+        const list = document.getElementById('list');
+        list.textContent = '';
+        if (state.notice === 'notConfigured') {
+            list.appendChild(el('div', 'hint', 'Bitte Bahnhof und Zugangsdaten eintragen'));
+            return;
+        }
+        if (state.rows.length === 0) {
+            list.appendChild(el('div', 'hint', 'Keine passenden Züge in den nächsten 2 Stunden'));
+        }
+        for (const row of state.rows) {
+            const group = el('div');
+            group.appendChild(rowOf(row));
+            for (const message of row.messages) group.appendChild(el('div', 'message', message));
+            list.appendChild(group);
+        }
+        // rows that do not fit are left out instead of being cut
+        while (list.childElementCount > 1 && list.scrollHeight > list.clientHeight) list.lastChild.remove();
+    }
+
+    function renderNext() {
+        const box = document.getElementById('next');
+        box.textContent = '';
+        const row = state.next;
+        if (!row) {
+            box.appendChild(el('div', 'hint', 'Kein Zug'));
+            return;
+        }
+        const top = el('div', 'row');
+        top.style.borderTop = 'none';
+        top.appendChild(badge(row.badge));
+        top.appendChild(el('span', 'line', row.line));
+        box.appendChild(top);
+        box.appendChild(el('div', 'big' + (row.delayed ? ' red' : ''), clock(row.time)));
+        const sub = el('div', 'sub', 'in ' + row.minutesLeft + ' min · Gl. ' + row.platform);
+        if (reachColor[row.reach]) sub.style.color = reachColor[row.reach];
+        box.appendChild(sub);
+        box.appendChild(el('span', 'dir', row.direction));
+    }
+
+    function render() {
+        document.getElementById('board').textContent = state.board === 'arr' ? 'Ankunft' : 'Abfahrt';
+        const stand = document.getElementById('stand');
+        const parts = [];
+        if (state.fetchedAt > 0) parts.push(clock(state.fetchedAt));
+        if (noticeText[state.notice]) parts.push(noticeText[state.notice]);
+        stand.textContent = parts.join(' · ');
+        stand.className = noticeText[state.notice] ? 'notice' : '';
+        renderList();
+        renderNext();
+    }
+
+    function handleMessage(data) {
+        state = typeof data === 'string' ? JSON.parse(data) : data;
+        render();
+    }
+
+    if (typeof ResizeObserver === 'function') {
+        new ResizeObserver(() => {
+            document.body.classList.toggle('small', document.body.clientHeight < 160);
+            if (state) renderList();
+        }).observe(document.body);
+    }
+</script>

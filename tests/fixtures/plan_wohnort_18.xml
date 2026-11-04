@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='WohnortBahnhof'>
+<s id="-7001-2611041801-4"><tl f="N" t="p" o="X1" c="NVA" n="83416"/><ar pt="2611041800" pp="1" l="RE3" ppth="Oststadt Hbf|Kreisstadt|Waldheim|Feldheim"/><dp pt="2611041801" pp="1" l="RE3" ppth="Großstadt Hbf"/></s>
+<s id="-7002-2611041806-1"><tl f="N" t="p" o="X2" c="NVB" n="95817"/><dp pt="2611041806" pp="2" l="RE7" ppth="Ostheim|Bachdorf|Löwenstadt Hbf"/></s>
+<s id="-7003-2611041806-6"><tl f="S" t="p" o="800244" c="SBX" n="34349"/><ar pt="2611041805" pp="13" l="S1" ppth="Südstadt Hbf|Südheim|Mittelfeld|Nachbarort"/><dp pt="2611041806" pp="13" l="S1" ppth="Großstadt-Ost|Großstadt-Mitte|Großstadt Hbf"/></s>
+<s id="-7004-2611041819-4"><tl f="N" t="p" o="X1" c="NVA" n="83419"/><ar pt="2611041818" pp="2" l="RE3" ppth="Großstadt Hbf"/><dp pt="2611041819" pp="2" l="RE3" ppth="Feldheim|Waldheim|Kreisstadt"/></s>
+<s id="-7005-2611041826-5"><tl f="S" t="p" o="800244" c="SBX" n="34751"/><ar pt="2611041825" pp="14" l="S2" ppth="Großstadt Hbf|Großstadt-Mitte|Großstadt-Ost"/><dp pt="2611041826" pp="14" l="S2" ppth="Moordorf|Burgstadt|Heideort|Nordstadt"/></s>
+<s id="-7006-2611041837-2"><tl f="S" t="p" o="800244" c="SBX" n="34756"/><ar pt="2611041836" pp="11" l="S2" ppth="Nordstadt|Heideort|Burgstadt|Moordorf"/><dp pt="2611041837" pp="11" l="S2" ppth="Großstadt-Ost|Großstadt-Mitte|Großstadt Hbf"/></s>
+<s id="-7007-2611041851-6"><tl f="S" t="p" o="800244" c="SBX" n="34354"/><ar pt="2611041850" pp="11" l="S1" ppth="Großstadt Hbf|Großstadt-Mitte|Großstadt-Ost"/><dp pt="2611041851" pp="11" l="S1" ppth="Nachbarort|Mittelfeld|Südheim|Südstadt Hbf"/></s>
+<s id="-7008-2611041854-3"><tl f="N" t="p" o="X2" c="NVB" n="95620"/><ar pt="2611041852" pp="1" l="RE6" ppth="Löwenstadt Hbf|Bachdorf|Ostheim"/><dp pt="2611041854" pp="1" l="RE6" ppth="Großstadt Hbf|Westheim|Flussstadt|Weststadt Hbf|Grenzstadt"/></s>
+<s id="-7009-2611041858-5"><tl f="N" t="p" o="X1" c="NVA" n="83421"/><ar pt="2611041857" pp="2" l="RE3" ppth="Großstadt Hbf"/><dp pt="2611041858" pp="2" l="RE3" ppth="Feldheim|Waldheim|Kreisstadt|Oststadt Hbf"/></s>
+<s id="-7010-2611041859-4"><tl f="N" t="p" o="X1" c="NVA" n="83420"/><ar pt="2611041858" pp="1" l="RE3" ppth="Oststadt Hbf|Kreisstadt|Waldheim|Feldheim"/><dp pt="2611041859" pp="1" l="RE3" ppth="Großstadt Hbf"/></s>
+<s id="-7011-2611041844-1"><tl f="N" t="p" o="X3" c="Bus" n="100"/><dp pt="2611041844" pp="ZOB" l="Bus 100" ppth="Rathaus|Dorfmitte"/></s>
+</timetable>

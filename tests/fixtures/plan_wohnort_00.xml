@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='WohnortBahnhof'>
+<s id="-7401-2611050003-6"><tl f="S" t="p" o="800244" c="SBX" n="34399"/><ar pt="2611050002" pp="13" l="S1" ppth="Südstadt Hbf|Nachbarort"/><dp pt="2611050003" pp="13" l="S1" ppth="Großstadt Hbf"/></s>
+</timetable>

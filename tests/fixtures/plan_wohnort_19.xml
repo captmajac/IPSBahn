@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='WohnortBahnhof'>
+<s id="-7101-2611041905-6"><tl f="S" t="p" o="800244" c="SBX" n="34355"/><ar pt="2611041905" pp="13" l="S1" ppth="Südstadt Hbf|Südheim|Mittelfeld|Nachbarort"/><dp pt="2611041906" pp="13" l="S1" ppth="Großstadt-Ost|Großstadt-Mitte|Großstadt Hbf"/></s>
+<s id="-7102-2611041912-1"><tl f="F" t="p" o="80" c="IC" n="2000"/><ar pt="2611041911" pp="3" ppth="Messestadt Hbf|Domstadt Hbf|Löwenstadt Hbf"/><dp pt="2611041912" pp="3" ppth="Großstadt Hbf|Hafenstadt Hbf|Küstenstadt"/></s>
+<s id="-7103-2611041920-2"><tl f="N" t="p" o="X2" c="NVB" n="95822"/><ar pt="2611041920" pp="2" l="RE7" ppth="Löwenstadt Hbf|Bachdorf|Ostheim"/></s>
+<s id="-7104-2611041940-3"><tl f="N" t="p" o="X2" c="rbx" n="83120"/><dp pt="2611041940" pp="4" l="RB10" ppth="Nordstadt|Heidestadt"/></s>
+</timetable>
