@@ -104,10 +104,9 @@ class Bahntafel extends IPSModule
     public function GetConfigurationForm()
     {
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
-        $station = $this->station();
         $route = $this->ReadPropertyString('RouteStation');
         $options = [
-            'Station'      => $station === null ? [] : [self::option($station['name'], $this->ReadPropertyString('Station'))],
+            'Station'      => [$this->currentStationOption()],
             'RouteStation' => array_merge([self::option($this->Translate("(none)"), '')], $route === '' ? [] : [self::option($route, $route)]),
         ];
         $form['elements'] = self::withOptions($form['elements'], $options);
@@ -285,8 +284,21 @@ class Bahntafel extends IPSModule
             echo $this->Translate("No station found");
             return;
         }
-        $options = array_map(fn (array $s) => self::option($s['name'], json_encode(['eva' => $s['eva'], 'name' => $s['name']])), $stations);
+        // the current value stays selectable, otherwise the form cannot be saved
+        $options = [$this->currentStationOption()];
+        foreach ($stations as $s) {
+            $option = self::option($s['name'], json_encode(['eva' => $s['eva'], 'name' => $s['name']]));
+            if ($option['value'] !== $options[0]['value']) {
+                $options[] = $option;
+            }
+        }
         $this->UpdateFormField('Station', 'options', json_encode($options));
+    }
+
+    private function currentStationOption(): array
+    {
+        $station = $this->station();
+        return self::option($station === null ? $this->Translate("(none)") : $station['name'], $this->ReadPropertyString('Station'));
     }
 
     // stations on the paths of the loaded trips, departures and arrivals together

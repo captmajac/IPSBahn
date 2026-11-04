@@ -120,6 +120,19 @@ $tests['Module: station search fills the station list'] = function () {
     check($options[0] === ['caption' => 'WohnortBahnhof', 'value' => WOHNORT], json_encode($options));
 };
 
+$tests['Module: station search keeps the current value in the list'] = function () {
+    $m = makeBoard(['Station' => '']);
+    $m->RequestAction('SearchStation', 'WohnortBahnhof');
+    check(lastFormUpdate($m, 'Station')[0] === ['caption' => '(none)', 'value' => ''], 'unset');
+    $m = makeBoard(['Station' => '{"eva":"8099003","name":"Großstadt Hbf"}']);
+    $m->RequestAction('SearchStation', 'WohnortBahnhof');
+    $values = array_column(lastFormUpdate($m, 'Station'), 'value');
+    check($values[0] === '{"eva":"8099003","name":"Großstadt Hbf"}' && in_array(WOHNORT, $values, true), json_encode($values));
+    $m = makeBoard();
+    $m->RequestAction('SearchStation', 'WohnortBahnhof');
+    check(count(array_keys(array_column(lastFormUpdate($m, 'Station'), 'value'), WOHNORT)) === 1, 'no duplicate');
+};
+
 $tests['Module: station search without result or with an error says so'] = function () {
     $m = makeBoard();
     check(str_contains(echoed(fn () => $m->RequestAction('SearchStation', 'Xyz')), 'No station found'), 'none');
@@ -164,6 +177,18 @@ $tests['Module: configuration form keeps the current station and route in the li
     };
     check(in_array(['caption' => 'WohnortBahnhof', 'value' => WOHNORT], $find($form, 'Station')['options'], true), 'station');
     check(in_array(['caption' => 'Großstadt Hbf', 'value' => 'Großstadt Hbf'], $find($form, 'RouteStation')['options'], true), 'route');
+};
+
+$tests['Module: configuration form offers the current value of every list'] = function () {
+    foreach ([[], ['Station' => '', 'RouteStation' => ''], ['ClientId' => '', 'ApiKey' => '', 'Station' => '']] as $props) {
+        $m = makeBoard($props);
+        foreach (json_decode($m->GetConfigurationForm(), true)['elements'] as $element) {
+            if ($element['type'] === 'Select') {
+                $value = $m->properties[$element['name']];
+                check(in_array($value, array_column($element['options'], 'value'), true), $element['name'] . ' = ' . json_encode($value));
+            }
+        }
+    }
 };
 
 $tests['Module: changing the station drops the trips of the old one'] = function () {

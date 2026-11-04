@@ -106,6 +106,7 @@ $tests['Language: library.json and module.json are valid'] = function () {
     foreach (MODULES as $module => $prefix) {
         $mod = json_decode(file_get_contents(__DIR__ . "/../$module/module.json"), true);
         check(($mod['prefix'] ?? '') === $prefix && ($mod['type'] ?? 0) === 3 && ($mod['name'] ?? '') === $module, "$module: module.json");
+        check(($mod['aliases'] ?? []) === [$module], "$module: one name in the module list");
         $ids[] = $mod['id'];
     }
     check(count(array_unique($ids)) === count($ids), 'module IDs not unique');

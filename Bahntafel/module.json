@@ -4,8 +4,7 @@
     "type": 3,
     "vendor": "IPSBahn",
     "aliases": [
-        "Bahntafel",
-        "DB Bahntafel"
+        "Bahntafel"
     ],
     "parentRequirements": [],
     "childRequirements": [],
