@@ -41,7 +41,8 @@ class BoardBuilder
                 'direction'       => $direction === false ? '' : $direction,
                 'continuesTo'     => $continuesTo === false ? '' : $continuesTo,
                 'minutesLeft'     => $minutesLeft,
-                'reach'           => self::reach($part, $stop['cancelled'] || $offRoute, $minutesLeft, $settings),
+                // a delay may shrink, so the walk is planned for the earlier of planned and changed time
+                'reach'           => self::reach($part, $stop['cancelled'] || $offRoute, intdiv(min($time, $stop['planned']) - $now, 60), $settings),
                 'offRoute'        => $offRoute,
                 'messages'        => $trip['messages'],
             ];

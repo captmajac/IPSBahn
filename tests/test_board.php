@@ -98,6 +98,14 @@ $tests['Board: reachability limits'] = function () {
     check(array_unique(array_column(BoardBuilder::build($trips, TestRegistry::$now, settings(['walk' => 20, 'board' => 'arr'])), 'reach')) === [null], 'arrival');
 };
 
+$tests['Board: reachability from the planned time, a delay may shrink'] = function () {
+    $now = TestRegistry::$now;
+    $rows = BoardBuilder::build([trip('late', 23, ['dep' => ['changed' => $now + 30 * 60]])], $now, settings(['walk' => 20, 'tolerance' => 4]));
+    check($rows[0]['minutesLeft'] === 30 && $rows[0]['reach'] === 'tight', json_encode($rows[0]['reach']));
+    $rows = BoardBuilder::build([trip('early', 30, ['dep' => ['changed' => $now + 19 * 60]])], $now, settings(['walk' => 20, 'tolerance' => 4]));
+    check($rows[0]['reach'] === 'missed', 'earlier than planned counts');
+};
+
 $tests['Board: direction, platform, operator and badge'] = function () {
     $trips = [trip('a', 5, [
         'line' => 'RE6', 'category' => 'NVB',
