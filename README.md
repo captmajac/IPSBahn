@@ -7,7 +7,18 @@ Gedacht für das Tablet zu Hause: „Wann muss ich los?“ und „Wann kommt mei
 ## Voraussetzungen
 
 - IP-Symcon ab 9.0
-- Kostenloses Konto im [DB API Marketplace](https://developers.deutschebahn.com/) mit einer Anwendung, die die API **Timetables** abonniert hat. Von dort kommen Client-ID und API-Key.
+- Kostenloses Konto im [DB API Marketplace](https://developers.deutschebahn.com/) mit einer Anwendung, die die API **Timetables** abonniert hat. Von dort kommen Client-ID und API-Key (siehe unten).
+
+## Zugang zur DB API
+
+Die Timetables API ist kostenlos. Man braucht dafür ein Entwicklerkonto, das in ein paar Minuten angelegt ist:
+
+1. Im [DB API Marketplace](https://developers.deutschebahn.com/db-api-marketplace/apis/) auf *Registrieren* gehen und ein Konto anlegen. Die Bestätigungsmail öffnen und sich anmelden.
+2. Unter *Anwendungen* (bzw. *Meine Anwendungen*) eine neue Anwendung anlegen, z. B. „Symcon Bahntafel“. Danach zeigt die Seite die **Client-ID** und den **API-Key** (Client Secret). Den API-Key gleich notieren, er wird unter Umständen nur einmal angezeigt; sonst lässt sich ein neuer erzeugen.
+3. Im Katalog die API **Timetables** öffnen, *Abonnieren* wählen, den kostenlosen Plan nehmen und die eben angelegte Anwendung auswählen.
+4. Client-ID und API-Key in der Instanz eintragen und „Verbindung testen“ klicken. Direkt nach dem Abonnieren kann es ein paar Minuten dauern, bis die Zugangsdaten angenommen werden.
+
+Client-ID und API-Key gehören nur in die Instanz, nicht in Skripte, Screenshots oder öffentliche Repositories.
 
 ## Installation
 
@@ -17,17 +28,17 @@ In der Konsole unter *Module Control* die URL `https://github.com/captmajac/IPSB
 
 1. Client-ID und API-Key eintragen.
 2. Unten bei „Bahnhof suchen“ den Namen eingeben (z. B. `WohnortBahnhof`) und „Suchen“ klicken. Danach oben unter „Bahnhof“ den richtigen Eintrag wählen und übernehmen.
-3. Optional die Strecke festlegen: zuerst „Bahnhöfe laden“, dann unter „Bahnhof der Strecke“ z. B. `Großstadt Hbf` wählen. Bei „Andere Züge“ entscheidest du, ob Züge, die nicht über diesen Bahnhof fahren, ausgeblendet oder grau dargestellt werden.
-   - Abfahrt: Züge, die nach oder über den Bahnhof fahren.
-   - Ankunft: Züge, die von dort kommen oder über ihn kommen.
+3. Optional die Richtung festlegen: zuerst „Bahnhöfe laden“, dann unter „Über Bahnhof“ z. B. `Großstadt Hbf` wählen. Bei „Andere Züge“ entscheidest du, ob Züge, die nicht an diesem Bahnhof halten, ausgeblendet oder grau dargestellt werden. Ausgeblendete Züge verkürzen die Tafel nicht, das Modul lädt dann weitere Stunden.
+   - Abfahrt: Züge, die danach an dem Bahnhof halten.
+   - Ankunft: Züge, die vorher an dem Bahnhof gehalten haben. Die Tafel zeigt dann, woher der Zug kommt und wohin er weiterfährt.
 4. Optional die Wegezeit von zu Hause zum Bahnhof eintragen, und zwar entspannt gegangen, dazu wie viele Minuten man mit zügigem Gehen spart. Die Abfahrtstafel zeigt dann *erreichbar* (entspannt), *knapp* (nur zügig) oder *nicht erreichbar*.
 5. „Verbindung testen“ prüft die Zugangsdaten.
 
-Unter der Instanz liegen danach:
+Die Instanz heißt danach wie der Bahnhof, sofern du sie nicht selbst umbenannt hast. Unter ihr liegen:
 
 - **Anzeige:** Umschalter Abfahrt/Ankunft. Er gilt für alle Clients.
-- **Tafel:** HTML-Box für das alte WebFront.
-- **Kachel:** In der Tile-Visualisierung ist die Instanz selbst die Kachel. Eine große Kachel zeigt die Liste, eine kleine nur den nächsten erreichbaren Zug.
+- **Abfahrt/Ankunft <Bahnhof>:** HTML-Box für das alte WebFront. Der Name folgt der Anzeige, ein eigener Name bleibt.
+- **Kachel:** In der Tile-Visualisierung ist die Instanz selbst die Kachel, mit eigenem Umschalter Abfahrt/Ankunft. Eine große Kachel zeigt die Liste, eine kleine nur den nächsten erreichbaren Zug.
 
 ## Aktualisierung
 
