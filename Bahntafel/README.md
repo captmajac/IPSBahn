@@ -37,7 +37,7 @@ Client-ID und API-Key gehören nur in die Instanz, nicht in Skripte, Screenshots
 
 ### 3. Software-Installation
 
-Über den Module Store oder in der Konsole unter *Module Control* die URL `https://github.com/captmajac/IPSBahn` hinzufügen.
+Über den Module Store oder in der Konsole unter *Module Control* die URL `https://github.com/captmajac/IPSBahntafel` hinzufügen.
 
 Kompatibilität: alle Bahnhöfe, die die DB Timetables API kennt (Deutschland). Die Tafel braucht eine Internetverbindung zur DB API.
 

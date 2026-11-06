@@ -1,4 +1,4 @@
-# IPSBahn
+# IPSBahntafel
 
 Bibliothek für IP-Symcon mit Bahn-Anzeigen aus der DB Timetables API.
 
@@ -17,7 +17,7 @@ Gedacht für das Tablet zu Hause: „Wann muss ich los?“ und „Wann kommt mei
 
 ## Installation
 
-Über den Module Store oder in der Konsole unter *Module Control* die URL `https://github.com/captmajac/IPSBahn` hinzufügen.
+Über den Module Store oder in der Konsole unter *Module Control* die URL `https://github.com/captmajac/IPSBahntafel` hinzufügen.
 
 ## Entwicklung
 

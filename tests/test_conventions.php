@@ -1,6 +1,6 @@
 <?php
 
-// Symcon best practice and language rules (as in IPSTuya and symcon-doorstation)
+// Symcon best practice and language rules (as in IPSTuya and IPSDoorstation)
 
 const MODULES = ['Bahntafel' => 'BAHN'];
 

@@ -1,8 +1,8 @@
 {
     "id": "{DD0671C9-4D94-48C0-B790-4CA26B5C4C3C}",
-    "name": "IPSBahn",
+    "name": "IPSBahntafel",
     "author": "captmajac",
-    "url": "https://github.com/captmajac/IPSBahn",
+    "url": "https://github.com/captmajac/IPSBahntafel",
     "compatibility": {
         "version": "9.0"
     },

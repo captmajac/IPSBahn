@@ -2,7 +2,7 @@
     "id": "{55B9AC8B-A7F5-4C4F-9086-1DE14EDDF287}",
     "name": "Bahntafel",
     "type": 3,
-    "vendor": "IPSBahn",
+    "vendor": "IPSBahntafel",
     "aliases": [
         "Bahntafel"
     ],
